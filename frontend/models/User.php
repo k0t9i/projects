@@ -20,8 +20,8 @@ use Yii;
  *
  * @property-read DGender $gender
  */
-class User extends \yii\db\ActiveRecord
-{
+class User extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
@@ -58,6 +58,7 @@ class User extends \yii\db\ActiveRecord
             'lastname' => Yii::t('frontend', 'Lastname'),
             'firstname' => Yii::t('frontend', 'Firstname'),
             'middlename' => Yii::t('frontend', 'Middlename'),
+            'gender' => Yii::t('frontend', 'Gender'),
             'id_gender' => Yii::t('frontend', 'Gender'),
             'email' => Yii::t('frontend', 'Email'),
             'lastLogin' => Yii::t('frontend', 'Last login')
@@ -71,4 +72,5 @@ class User extends \yii\db\ActiveRecord
     {
         return $this->hasOne(DGender::className(), ['id' => 'id_gender']);
     }
+
 }

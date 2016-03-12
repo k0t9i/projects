@@ -12,8 +12,8 @@ use Yii;
  * 
  * @property-read string $localizedName
  */
-class DGender extends \yii\db\ActiveRecord
-{
+class DGender extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
@@ -33,9 +33,15 @@ class DGender extends \yii\db\ActiveRecord
             [['name'], 'unique']
         ];
     }
-    
+
     public function getLocalizedName()
     {
         return Yii::t('frontend', $this->name);
     }
+
+    public function __toString()
+    {
+        return $this->getLocalizedName();
+    }
+
 }
