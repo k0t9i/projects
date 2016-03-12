@@ -18,7 +18,7 @@ use Yii;
  * @property string $lastLogin
  * @property string $authKey
  *
- * @property DGender $idGender
+ * @property-read DGender $gender
  */
 class User extends \yii\db\ActiveRecord
 {
@@ -60,8 +60,7 @@ class User extends \yii\db\ActiveRecord
             'middlename' => Yii::t('frontend', 'Middlename'),
             'id_gender' => Yii::t('frontend', 'Gender'),
             'email' => Yii::t('frontend', 'Email'),
-            'lastLogin' => Yii::t('frontend', 'Last Login'),
-            'authKey' => Yii::t('frontend', 'Auth Key'),
+            'lastLogin' => Yii::t('frontend', 'Last login')
         ];
     }
 

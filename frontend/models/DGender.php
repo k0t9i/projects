@@ -9,8 +9,8 @@ use Yii;
  *
  * @property integer $id
  * @property string $name
- *
- * @property User[] $users
+ * 
+ * @property-read string $localizedName
  */
 class DGender extends \yii\db\ActiveRecord
 {
@@ -32,5 +32,10 @@ class DGender extends \yii\db\ActiveRecord
             [['name'], 'string', 'max' => 256],
             [['name'], 'unique']
         ];
+    }
+    
+    public function getLocalizedName()
+    {
+        return Yii::t('frontend', $this->name);
     }
 }
