@@ -12,7 +12,8 @@ use Yii;
  * 
  * @property-read string $localizedName
  */
-class DGender extends \yii\db\ActiveRecord {
+class DGender extends \yii\db\ActiveRecord
+{
 
     /**
      * @inheritdoc

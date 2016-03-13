@@ -3,6 +3,9 @@
 namespace frontend\models;
 
 use Yii;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+use yii\base\NotSupportedException;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -20,7 +23,8 @@ use Yii;
  *
  * @property-read DGender $gender
  */
-class User extends \yii\db\ActiveRecord {
+class User extends ActiveRecord implements IdentityInterface
+{
 
     /**
      * @inheritdoc
@@ -71,6 +75,70 @@ class User extends \yii\db\ActiveRecord {
     public function getGender()
     {
         return $this->hasOne(DGender::className(), ['id' => 'id_gender']);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function findIdentity($id)
+    {
+        return static::findOne($id);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        return static::findOne([
+            'accessToken' => $token
+        ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function validateAuthKey($authKey)
+    {
+        throw new NotSupportedException();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAuthKey()
+    {
+        throw new NotSupportedException();
+    }
+    
+    /**
+     * Find User model by login and validate it password
+     * Return null if user not found or password invalid
+     * 
+     * @param string $login
+     * @param string $password
+     * @return User|null
+     */
+    public static function findByLoginAndPassword($login, $password)
+    {
+        $model = static::findOne([
+            'login' => $login
+        ]);
+        
+        $ret = null;
+        if ($model && Yii::$app->security->validatePassword($password, $model->password)){
+            $ret = $model;
+        }
+        
+        return $ret;
     }
 
 }
