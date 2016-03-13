@@ -4,7 +4,7 @@ use yii\db\Migration;
 
 class m160312_162824_create_d_gender_table extends Migration {
 
-    public function up()
+    public function safeUp()
     {
         $this->createTable('d_gender', [
             'id' => $this->primaryKey(),

@@ -4,7 +4,7 @@ use yii\db\Migration;
 
 class m160312_163824_create_user_table extends Migration {
 
-    public function up()
+    public function safeUp()
     {        
         $this->createTable('user', [
             'id' => $this->primaryKey(),
