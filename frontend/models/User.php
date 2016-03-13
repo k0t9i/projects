@@ -22,6 +22,7 @@ use yii\base\NotSupportedException;
  * @property string $access_token
  *
  * @property-read DGender $gender
+ * @property-read UserGroup[] $userGroups
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -142,9 +143,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * Setup restful fields
-     * 
-     * @return array
+     * @inheritdoc
      */
     public function fields()
     {
@@ -155,8 +154,17 @@ class User extends ActiveRecord implements IdentityInterface
         unset($fields['id_gender']);
         
         $fields['gender'] = 'gender';
+        $fields['userGroups'] = 'userGroups';
         
         return $fields;
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserGroups()
+    {
+        return $this->hasMany(UserGroup::className(), ['id' => 'id_user_group'])->viaTable('{{%j_user_user_group}}', ['id_user' => 'id']);
     }
 
 }
