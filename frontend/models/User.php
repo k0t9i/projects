@@ -140,5 +140,23 @@ class User extends ActiveRecord implements IdentityInterface
         
         return $ret;
     }
+    
+    /**
+     * Setup restful fields
+     * 
+     * @return array
+     */
+    public function fields()
+    {
+        $fields = parent::fields();
+        
+        unset($fields['password']);
+        unset($fields['accessToken']);
+        unset($fields['id_gender']);
+        
+        $fields['gender'] = 'gender';
+        
+        return $fields;
+    }
 
 }
