@@ -42,7 +42,9 @@ return [
             'showScriptName' => false,
             'enableStrictParsing' => true,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => [
+                    'user', 'user-group'
+                ]],
             ],
         ],
     ],
