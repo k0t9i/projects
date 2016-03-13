@@ -43,7 +43,7 @@ return [
             'enableStrictParsing' => true,
             'rules' => [
                 ['class' => 'yii\rest\UrlRule', 'controller' => [
-                    'user', 'user-group'
+                    'user', 'user-group', 'gender'
                 ]],
             ],
         ],

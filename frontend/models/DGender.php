@@ -23,18 +23,6 @@ class DGender extends \yii\db\ActiveRecord
         return '{{%d_gender}}';
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return [
-            [['name'], 'required'],
-            [['name'], 'string', 'max' => 256],
-            [['name'], 'unique']
-        ];
-    }
-
     public function getLocalizedName()
     {
         return Yii::t('frontend', $this->name);
@@ -43,6 +31,15 @@ class DGender extends \yii\db\ActiveRecord
     public function __toString()
     {
         return $this->getLocalizedName();
+    }
+    
+    public function fields()
+    {
+        return [
+            'id' => 'id',
+            'name' => 'name',
+            'localizedName' => 'localizedName'
+        ];
     }
 
 }
