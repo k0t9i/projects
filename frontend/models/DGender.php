@@ -23,22 +23,11 @@ class DGender extends \yii\db\ActiveRecord
         return '{{%d_gender}}';
     }
 
-    public function getLocalizedName()
-    {
-        return Yii::t('frontend', $this->name);
-    }
-
-    public function __toString()
-    {
-        return $this->getLocalizedName();
-    }
-    
     public function fields()
     {
         return [
             'id' => 'id',
-            'name' => 'name',
-            'localizedName' => 'localizedName'
+            'name' => 'name'
         ];
     }
 

@@ -26,30 +26,6 @@ class UserGroup extends \yii\db\ActiveRecord
     }
 
     /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return [
-            [['name', 'main_role'], 'required'],
-            [['name'], 'string', 'max' => 1024],
-            [['main_role'], 'string', 'max' => 64]
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => Yii::t('frontend', 'ID'),
-            'name' => Yii::t('frontend', 'Name'),
-            'main_role' => Yii::t('frontend', 'Main Role'),
-        ];
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getUsers()

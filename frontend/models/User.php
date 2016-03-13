@@ -36,41 +36,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return [
-            [['login', 'password', 'email'], 'required'],
-            [['id_gender'], 'integer'],
-            [['lastLogin'], 'safe'],
-            [['login', 'email', 'access_token'], 'string', 'max' => 256],
-            [['password'], 'string', 'max' => 64],
-            [['lastname', 'firstname', 'middlename'], 'string', 'max' => 1024],
-            [['email'], 'unique'],
-            [['login'], 'unique']
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return [
-            'login' => Yii::t('frontend', 'Login'),
-            'password' => Yii::t('frontend', 'Password'),
-            'lastname' => Yii::t('frontend', 'Lastname'),
-            'firstname' => Yii::t('frontend', 'Firstname'),
-            'middlename' => Yii::t('frontend', 'Middlename'),
-            'gender' => Yii::t('frontend', 'Gender'),
-            'id_gender' => Yii::t('frontend', 'Gender'),
-            'email' => Yii::t('frontend', 'Email'),
-            'last_login' => Yii::t('frontend', 'Last login')
-        ];
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getGender()
