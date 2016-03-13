@@ -18,8 +18,8 @@ use yii\base\NotSupportedException;
  * @property string $middlename
  * @property integer $id_gender
  * @property string $email
- * @property string $lastLogin
- * @property string $authKey
+ * @property string $last_login
+ * @property string $access_token
  *
  * @property-read DGender $gender
  */
@@ -43,7 +43,7 @@ class User extends ActiveRecord implements IdentityInterface
             [['login', 'password', 'email'], 'required'],
             [['id_gender'], 'integer'],
             [['lastLogin'], 'safe'],
-            [['login', 'email', 'authKey'], 'string', 'max' => 256],
+            [['login', 'email', 'access_token'], 'string', 'max' => 256],
             [['password'], 'string', 'max' => 64],
             [['lastname', 'firstname', 'middlename'], 'string', 'max' => 1024],
             [['email'], 'unique'],
@@ -65,7 +65,7 @@ class User extends ActiveRecord implements IdentityInterface
             'gender' => Yii::t('frontend', 'Gender'),
             'id_gender' => Yii::t('frontend', 'Gender'),
             'email' => Yii::t('frontend', 'Email'),
-            'lastLogin' => Yii::t('frontend', 'Last login')
+            'last_login' => Yii::t('frontend', 'Last login')
         ];
     }
 
@@ -99,7 +99,7 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findIdentityByAccessToken($token, $type = null)
     {
         return static::findOne([
-            'accessToken' => $token
+            'access_token' => $token
         ]);
     }
 
@@ -151,7 +151,7 @@ class User extends ActiveRecord implements IdentityInterface
         $fields = parent::fields();
         
         unset($fields['password']);
-        unset($fields['accessToken']);
+        unset($fields['access_token']);
         unset($fields['id_gender']);
         
         $fields['gender'] = 'gender';
