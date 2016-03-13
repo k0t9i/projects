@@ -64,5 +64,17 @@ class UserGroup extends \yii\db\ActiveRecord
     {
         return Yii::$app->authManager->getRole($this->main_role);
     }
+    
+    /**
+     * @inheritdoc
+     */
+    public function fields()
+    {
+        return [
+            'id' => 'id',
+            'name' => 'name',
+            'mainRole' => 'main_role'
+        ];
+    }
 
 }

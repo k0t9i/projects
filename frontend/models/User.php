@@ -147,16 +147,17 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function fields()
     {
-        $fields = parent::fields();
-        
-        unset($fields['password']);
-        unset($fields['access_token']);
-        unset($fields['id_gender']);
-        
-        $fields['gender'] = 'gender';
-        $fields['userGroups'] = 'userGroups';
-        
-        return $fields;
+        return [
+            'id' => 'id',
+            'login' => 'login',
+            'lastname' => 'lastname',
+            'firstname' => 'firstname',
+            'middlename' => 'middlename',
+            'gender' => 'gender',
+            'email' => 'email',
+            'lastLogin' => 'last_login',
+            'userGroups' => 'userGroups'
+        ];
     }
     
     /**
