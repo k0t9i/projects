@@ -19,7 +19,6 @@ use yii\base\NotSupportedException;
  * @property integer $id_gender
  * @property string $email
  * @property string $last_login
- * @property string $access_token
  *
  * @property-read DGender $gender
  * @property-read UserGroup[] $userGroups
