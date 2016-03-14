@@ -34,9 +34,12 @@ return [
             'enableStrictParsing' => true,
             'rules' => [
                 ['class' => 'yii\rest\UrlRule', 'controller' => [
-                    'user', 'user-group', 'gender', 'access-token'
+                    'user', 
+                    'user-group', 
+                    'gender', 
+                    'access-token'
                 ]],
-                'main/test' => 'main/test'
+                'user/self' => 'user/self'
             ],
         ],
     ],

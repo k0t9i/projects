@@ -11,5 +11,10 @@ class UserController extends ApiController
     {
         $this->modelClass = User::className();
     }
+    
+    public function actionSelf()
+    {
+        return \Yii::$app->user->identity;
+    }
 
 }
