@@ -13,7 +13,7 @@ class AccessTokenController extends ApiController
     {
         $behaviors = parent::behaviors();
         
-        unset($behaviors['authenticator']);
+        $behaviors['authenticator']['except'] = ['create'];
         
         return $behaviors;
     }

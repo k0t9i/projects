@@ -36,11 +36,9 @@ return [
                 ['class' => 'yii\rest\UrlRule', 'controller' => [
                     'user', 
                     'user-group', 
-                    'gender'
+                    'gender',
+                    'access-token'
                 ]],
-                ['class' => 'yii\rest\UrlRule', 'tokens' => [
-                    '{id}' => '<id:[a-z0-9]{64}>'
-                ], 'controller' => ['access-token']],
                 'user/self' => 'user/self'
             ],
         ],
