@@ -6,7 +6,7 @@ class m160312_163824_create_user_table extends Migration {
 
     public function safeUp()
     {        
-        $this->createTable('user', [
+        $this->createTable('{{%user}}', [
             'id' => $this->primaryKey(),
             'login' => $this->string(256)->notNull()->unique(),
             'password' => $this->string(64)->notNull(),
@@ -17,8 +17,8 @@ class m160312_163824_create_user_table extends Migration {
             'email' => $this->string(256)->notNull()->unique(),
             'lastLogin' => $this->dateTime(),
         ]);
-        $this->createIndex('idx-user-id_gender', 'user', 'id_gender');
-        $this->addForeignKey('fk-user-d_gender', 'user', 'id_gender', 'd_gender', 'id');
+        $this->createIndex('idx-user-id_gender', '{{%user}}', 'id_gender');
+        $this->addForeignKey('fk-user-d_gender', '{{%user}}', 'id_gender', '{{%d_gender}}', 'id');
     }
 
     public function down()
