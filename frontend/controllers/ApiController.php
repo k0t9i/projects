@@ -3,8 +3,7 @@
 namespace frontend\controllers;
 
 use yii\rest\ActiveController;
-use frontend\models\User;
-use yii\filters\auth\HttpBasicAuth;
+use yii\filters\auth\HttpBearerAuth;
 
 class ApiController extends ActiveController
 {
@@ -13,10 +12,7 @@ class ApiController extends ActiveController
     {
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
-            'class' => HttpBasicAuth::className(),
-            'auth' => function ($username, $password) {
-                return User::findByLoginAndPassword($username, $password);
-            }
+            'class' => HttpBearerAuth::className()
         ];
         return $behaviors;
     }

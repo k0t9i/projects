@@ -36,6 +36,7 @@ return [
                 ['class' => 'yii\rest\UrlRule', 'controller' => [
                     'user', 'user-group', 'gender', 'access-token'
                 ]],
+                'main/test' => 'main/test'
             ],
         ],
     ],

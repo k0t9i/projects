@@ -23,6 +23,7 @@ use yii\base\NotSupportedException;
  *
  * @property-read DGender $gender
  * @property-read UserGroup[] $userGroups
+ * @property-read AccessToken[] $accessTokens
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -41,6 +42,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function getGender()
     {
         return $this->hasOne(DGender::className(), ['id' => 'id_gender']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAccessTokens()
+    {
+        return $this->hasMany(AccessToken::className(), ['id_user' => 'id']);
     }
 
     /**
@@ -64,9 +73,15 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return static::findOne([
-            'access_token' => $token
-        ]);
+        return static::find()
+                ->joinWith([
+                    'accessTokens' => function($query) {
+                        $query->from(AccessToken::tableName() . ' at');
+                    }
+                ])
+                ->where(['at.token' => $token])
+                ->andWhere('at.expires_in > :now', [':now' => time()])
+                ->one();
     }
 
     /**
