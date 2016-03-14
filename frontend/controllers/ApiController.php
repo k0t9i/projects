@@ -4,6 +4,8 @@ namespace frontend\controllers;
 
 use yii\rest\ActiveController;
 use yii\filters\auth\HttpBearerAuth;
+use yii\filters\auth\QueryParamAuth;
+use yii\filters\auth\CompositeAuth;
 
 class ApiController extends ActiveController
 {
@@ -12,7 +14,11 @@ class ApiController extends ActiveController
     {
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
-            'class' => HttpBearerAuth::className()
+            'class' => CompositeAuth::className(),
+            'authMethods' => [
+                HttpBearerAuth::className(),
+                QueryParamAuth::className()
+            ]
         ];
         return $behaviors;
     }
