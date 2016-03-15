@@ -39,7 +39,8 @@ return [
                     'gender',
                     'access-token'
                 ]],
-                'user/self' => 'user/self'
+                'user/self' => 'user/self',
+                'access-token/delete-all' => 'access-token/delete-all'
             ],
         ],
     ],
