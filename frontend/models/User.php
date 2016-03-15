@@ -23,9 +23,12 @@ use yii\base\NotSupportedException;
  * @property-read DGender $gender
  * @property-read UserGroup[] $userGroups
  * @property-read AccessToken[] $accessTokens
+ * @property-read AccessToken $currentAccessToken
  */
 class User extends ActiveRecord implements IdentityInterface
 {
+
+    private $_accessToken;
 
     /**
      * @inheritdoc
@@ -42,7 +45,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(DGender::className(), ['id' => 'id_gender']);
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -72,7 +75,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return static::find()
+        $ret = static::find()
                 ->joinWith([
                     'accessTokens' => function($query) {
                         $query->from(AccessToken::tableName() . ' at');
@@ -81,6 +84,11 @@ class User extends ActiveRecord implements IdentityInterface
                 ->where(['at.token' => $token])
                 ->andWhere('at.expires_in > :now', [':now' => time()])
                 ->one();
+        if ($ret) {
+            $ret->_accessToken = $token;
+        }
+        
+        return $ret;
     }
 
     /**
@@ -98,7 +106,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         throw new NotSupportedException();
     }
-    
+
     /**
      * Find User model by login and validate it password
      * Return null if user not found or password invalid
@@ -110,17 +118,17 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findByLoginAndPassword($login, $password)
     {
         $model = static::findOne([
-            'login' => $login
+                    'login' => $login
         ]);
-        
+
         $ret = null;
-        if ($model && Yii::$app->security->validatePassword($password, $model->password)){
+        if ($model && Yii::$app->security->validatePassword($password, $model->password)) {
             $ret = $model;
         }
-        
+
         return $ret;
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -138,13 +146,24 @@ class User extends ActiveRecord implements IdentityInterface
             'userGroups' => 'userGroups'
         ];
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getUserGroups()
     {
         return $this->hasMany(UserGroup::className(), ['id' => 'id_user_group'])->viaTable('{{%j_user_user_group}}', ['id_user' => 'id']);
+    }
+    
+    public function getCurrentAccessToken()
+    {
+        if (!($this->_accessToken instanceof AccessToken)) {
+            $this->_accessToken = AccessToken::findOne([
+                'token' => $this->_accessToken
+            ]);
+        }
+        
+        return $this->_accessToken;
     }
 
 }
