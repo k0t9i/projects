@@ -33,14 +33,14 @@ return [
             'showScriptName' => false,
             'enableStrictParsing' => true,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => [
-                    'user', 
-                    'user-group', 
-                    'gender',
-                    'access-token'
-                ]],
-                'user/self' => 'user/self',
-                'access-token/delete-all' => 'access-token/delete-all'
+                [
+                    'class' => 'yii\rest\UrlRule', 
+                    'controller' => [
+                        'user', 'user-group', 'gender', 'access-token'
+                    ]
+                ],
+                'users/self' => 'user/self',
+                'access-tokens/delete-all' => 'access-token/delete-all'
             ],
         ],
     ],
