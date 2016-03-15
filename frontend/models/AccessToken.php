@@ -4,6 +4,7 @@ namespace frontend\models;
 
 use Yii;
 use frontend\models\User;
+use frontend\rbac\HasOwnerInterface;
 
 /**
  * This is the model class for table "{{%access_token}}".
@@ -15,7 +16,7 @@ use frontend\models\User;
  *
  * @property User $user
  */
-class AccessToken extends \yii\db\ActiveRecord
+class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
 {
     const LIFETIME = 24 * 3600;
 
@@ -60,6 +61,11 @@ class AccessToken extends \yii\db\ActiveRecord
     private function generateToken()
     {
         $this->token = hash('sha256', uniqid(microtime(true), true));
+    }
+
+    public function getOwnerId()
+    {
+        return $this->id_user;
     }
 
 }
