@@ -70,6 +70,7 @@ class AccessTokenController extends ApiController
         unset($actions['update']);
 
         $actions['create']['checkAccess'] = [$this, 'checkAccessForCreate'];
+        $actions['create']['scenario'] = AccessToken::SCENARIO_CREATE;
 
         return $actions;
     }

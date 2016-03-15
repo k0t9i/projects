@@ -19,6 +19,7 @@ use frontend\rbac\HasOwnerInterface;
 class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
 {
     const LIFETIME = 24 * 3600;
+    const SCENARIO_CREATE = 'scenario-create';
 
     /**
      * @inheritdoc
@@ -26,7 +27,7 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
     public function rules()
     {
         return [
-            ['id_user', 'exist', 'targetClass' => User::className(), 'targetAttribute' => 'id']
+            ['id_user', 'exist', 'targetClass' => User::className(), 'targetAttribute' => 'id', 'on' => static::SCENARIO_CREATE]
         ];
     }
 
@@ -66,6 +67,21 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
     public function getOwnerId()
     {
         return $this->id_user;
+    }
+    
+    public function fields()
+    {
+        $ret = [
+            'id' => 'id',
+            'user' => 'id_user',
+            'expiresIn' => 'expires_in'
+        ];
+        
+        if ($this->id_user == \Yii::$app->user->getId() || $this->scenario == static::SCENARIO_CREATE) {
+            $ret['token'] = 'token';
+        }
+        
+        return $ret;
     }
 
 }
