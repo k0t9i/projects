@@ -36,11 +36,23 @@ return [
                 [
                     'class' => 'yii\rest\UrlRule', 
                     'controller' => [
-                        'user', 'user-group', 'gender', 'access-token'
+                        'user-group', 'gender'
                     ]
                 ],
-                'users/self' => 'user/self',
-                'access-tokens/delete-all' => 'access-token/delete-all'
+                [
+                    'class' => 'yii\rest\UrlRule', 
+                    'controller' => ['user'],
+                    'extraPatterns' => [
+                        'GET self' => 'self'
+                    ]
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule', 
+                    'controller' => ['access-token'],
+                    'extraPatterns' => [
+                        'DELETE delete-all' => 'delete-all'
+                    ]
+                ]
             ],
         ],
     ],
