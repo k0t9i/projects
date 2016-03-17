@@ -31,7 +31,6 @@ class User extends ActiveRecord implements IdentityInterface
     const SCENARIO_CREATE = 'scenario-create';
 
     public $passwordRepeat;
-    public $rawPassword;
     private $_accessToken;
 
     /**
@@ -53,15 +52,16 @@ class User extends ActiveRecord implements IdentityInterface
             ['email', 'unique'],
             ['email', 'email'],
             ['email', 'string', 'max' => 1024],
-            ['rawPassword', 'required', 'on' => static::SCENARIO_CREATE],
-            ['rawPassword', 'compare', 'compareAttribute' => 'passwordRepeat']
+            ['password', 'required', 'on' => static::SCENARIO_CREATE],
+            ['passwordRepeat', 'safe'],
+            ['password', 'compare', 'compareAttribute' => 'passwordRepeat']
         ];
     }
 
     public function beforeSave($insert)
     {
-        if ($this->rawPassword) {
-            $this->password = \Yii::$app->security->generatePasswordHash($this->rawPassword);
+        if ($insert || $this->isAttributeChanged('password')) {
+            $this->password = \Yii::$app->security->generatePasswordHash($this->password);
         }
         return parent::beforeSave($insert);
     }
