@@ -6,7 +6,9 @@ $params = array_merge(
 
 return [
     'id' => 'app-frontend',
-    'language' => 'ru_RU',
+    'language' => 'ru',
+    'charset' => 'utf-8',
+    'timeZone' => 'Europe/Moscow',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
