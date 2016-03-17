@@ -35,6 +35,15 @@ return [
             'datetimeFormat' => 'php:c',
             'nullDisplay' => ''
         ],
+        'i18n' => [
+            'translations' => [
+                'frontend*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'sourceLanguage' => 'en-US',
+                    'basePath' => '@frontend/messages'
+                ]
+            ]
+        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,

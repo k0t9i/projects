@@ -168,7 +168,7 @@ class User extends ActiveRecord implements IdentityInterface
             'firstname' => 'firstname',
             'middlename' => 'middlename',
             'gender' => function($model) {
-                return $model->gender ? $model->gender->name : null;
+                return $model->gender ? $model->gender->localizedName : null;
             },
             'email' => 'email',
             'lastLogin' => function($model) {
