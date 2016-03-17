@@ -16,5 +16,14 @@ class UserController extends ApiController
     {
         return \Yii::$app->user->identity;
     }
+    
+    public function actions()
+    {
+        $actions = parent::actions();
+
+        $actions['create']['scenario'] = User::SCENARIO_CREATE;
+
+        return $actions;
+    }
 
 }
