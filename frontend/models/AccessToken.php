@@ -76,8 +76,12 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
         $ret = [
             'id' => 'id',
             'user' => 'id_user',
-            'expiresIn' => 'expires_in',
-            'createdAt' => 'created_at'
+            'expiresIn' => function($model) {
+                return Yii::$app->formatter->format($model->expires_in, 'datetime');
+            },
+            'createdAt' => function($model) {
+                return Yii::$app->formatter->format($model->created_at, 'datetime');
+            },
         ];
         
         if ($this->id_user == \Yii::$app->user->getId() || $this->scenario == static::SCENARIO_CREATE) {

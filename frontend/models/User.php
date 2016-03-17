@@ -176,7 +176,7 @@ class User extends ActiveRecord implements IdentityInterface
                 if ($model->currentAccessToken) {
                     $timestamp = $model->currentAccessToken->created_at;
                 }
-                return !is_null($timestamp) ? date('c', $timestamp) : null;
+                return Yii::$app->formatter->format($timestamp, 'datetime');
             },
         ];
     }

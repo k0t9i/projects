@@ -28,6 +28,11 @@ return [
         'errorHandler' => [
             'errorAction' => 'main/error',
         ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'datetimeFormat' => 'php:c',
+            'nullDisplay' => ''
+        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
