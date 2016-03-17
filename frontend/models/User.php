@@ -140,9 +140,17 @@ class User extends ActiveRecord implements IdentityInterface
             'lastname' => 'lastname',
             'firstname' => 'firstname',
             'middlename' => 'middlename',
-            'gender' => 'gender',
+            'gender' => function($model) {
+                return $model->gender ? $model->gender->name : null;
+            },
             'email' => 'email',
             'lastLogin' => 'last_login',
+        ];
+    }
+    
+    public function extraFields()
+    {
+        return [
             'userGroups' => 'userGroups'
         ];
     }
