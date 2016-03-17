@@ -7,6 +7,15 @@ use frontend\models\User;
 class UserController extends ApiController
 {
 
+    public function verbs()
+    {
+        $verbs = parent::verbs();
+        
+        $verbs['self'] = ['GET'];
+        
+        return $verbs;
+    }
+    
     public function init()
     {
         $this->modelClass = User::className();
