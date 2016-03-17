@@ -28,6 +28,10 @@ use yii\base\NotSupportedException;
 class User extends ActiveRecord implements IdentityInterface
 {
 
+    const SCENARIO_CREATE = 'scenario-create';
+
+    public $passwordRepeat;
+    public $rawPassword;
     private $_accessToken;
 
     /**
@@ -36,6 +40,30 @@ class User extends ActiveRecord implements IdentityInterface
     public static function tableName()
     {
         return '{{%user}}';
+    }
+
+    public function rules()
+    {
+        return [
+            [['login', 'email'], 'required'],
+            ['login', 'string', 'max' => 256],
+            ['login', 'unique'],
+            [['lastname', 'firstname', 'middlename'], 'string', 'max' => 1024],
+            ['id_gender', 'exist', 'targetClass' => DGender::className(), 'targetAttribute' => 'id'],
+            ['email', 'unique'],
+            ['email', 'email'],
+            ['email', 'string', 'max' => 1024],
+            ['rawPassword', 'required', 'on' => static::SCENARIO_CREATE],
+            ['rawPassword', 'compare', 'compareAttribute' => 'passwordRepeat']
+        ];
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($this->rawPassword) {
+            $this->password = \Yii::$app->security->generatePasswordHash($this->rawPassword);
+        }
+        return parent::beforeSave($insert);
     }
 
     /**
@@ -87,7 +115,7 @@ class User extends ActiveRecord implements IdentityInterface
         if ($ret) {
             $ret->_accessToken = $token;
         }
-        
+
         return $ret;
     }
 
@@ -147,7 +175,7 @@ class User extends ActiveRecord implements IdentityInterface
             'lastLogin' => 'last_login',
         ];
     }
-    
+
     public function extraFields()
     {
         return [
@@ -162,15 +190,15 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasMany(UserGroup::className(), ['id' => 'id_user_group'])->viaTable('{{%j_user_user_group}}', ['id_user' => 'id']);
     }
-    
+
     public function getCurrentAccessToken()
     {
         if (!($this->_accessToken instanceof AccessToken)) {
             $this->_accessToken = AccessToken::findOne([
-                'token' => $this->_accessToken
+                        'token' => $this->_accessToken
             ]);
         }
-        
+
         return $this->_accessToken;
     }
 
