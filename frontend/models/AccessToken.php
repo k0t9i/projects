@@ -13,6 +13,7 @@ use frontend\rbac\HasOwnerInterface;
  * @property string $token
  * @property integer $id_user
  * @property integer $expires_in
+ * @property integer $created_at
  *
  * @property User $user
  */
@@ -39,6 +40,7 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
         if ($insert) {
             $this->generateToken();
             $this->expires_in = time() + static::LIFETIME;
+            $this->created_at = time();
         }
         return parent::beforeSave($insert);
     }
@@ -74,7 +76,8 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
         $ret = [
             'id' => 'id',
             'user' => 'id_user',
-            'expiresIn' => 'expires_in'
+            'expiresIn' => 'expires_in',
+            'createdAt' => 'created_at'
         ];
         
         if ($this->id_user == \Yii::$app->user->getId() || $this->scenario == static::SCENARIO_CREATE) {

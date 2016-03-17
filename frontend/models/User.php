@@ -18,7 +18,6 @@ use yii\base\NotSupportedException;
  * @property string $middlename
  * @property integer $id_gender
  * @property string $email
- * @property string $last_login
  *
  * @property-read DGender $gender
  * @property-read UserGroup[] $userGroups
@@ -172,7 +171,13 @@ class User extends ActiveRecord implements IdentityInterface
                 return $model->gender ? $model->gender->name : null;
             },
             'email' => 'email',
-            'lastLogin' => 'last_login',
+            'lastLogin' => function($model) {
+                $timestamp = null;
+                if ($model->currentAccessToken) {
+                    $timestamp = $model->currentAccessToken->created_at;
+                }
+                return !is_null($timestamp) ? date('c', $timestamp) : null;
+            },
         ];
     }
 
