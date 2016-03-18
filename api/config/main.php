@@ -66,8 +66,7 @@ return [
                     'class' => 'yii\rest\UrlRule', 
                     'controller' => ['v1/access-token'],
                     'extraPatterns' => [
-                        'DELETE delete-all' => 'delete-all',
-                        'GET self' => 'self'
+                        'DELETE delete-all' => 'delete-all'
                     ]
                 ]
             ],
