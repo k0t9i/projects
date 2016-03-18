@@ -3,7 +3,7 @@
 namespace console\models;
 
 use yii\base\Model;
-use frontend\rbac\OwnerRule;
+use api\rbac\OwnerRule;
 
 class Rbac extends Model
 {

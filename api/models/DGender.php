@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\models;
+namespace api\models;
 
 use Yii;
 
@@ -33,7 +33,7 @@ class DGender extends \yii\db\ActiveRecord
     
     public function getLocalizedName()
     {
-        return Yii::t('frontend', $this->name);
+        return Yii::t('api', $this->name);
     }
 
 }

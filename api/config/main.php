@@ -5,16 +5,16 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-frontend',
+    'id' => 'api',
     'language' => 'ru',
     'charset' => 'utf-8',
     'timeZone' => 'Europe/Moscow',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
-    'controllerNamespace' => 'frontend\controllers',
+    'controllerNamespace' => 'api\controllers',
     'components' => [
         'user' => [
-            'identityClass' => 'frontend\models\User',
+            'identityClass' => 'api\models\User',
             'enableSession' => false,
             'loginUrl' => null
         ],
@@ -37,10 +37,10 @@ return [
         ],
         'i18n' => [
             'translations' => [
-                'frontend*' => [
+                'api*' => [
                     'class' => 'yii\i18n\PhpMessageSource',
                     'sourceLanguage' => 'en-US',
-                    'basePath' => '@frontend/messages'
+                    'basePath' => '@api/messages'
                 ]
             ]
         ],

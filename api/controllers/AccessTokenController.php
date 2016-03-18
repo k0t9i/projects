@@ -1,10 +1,10 @@
 <?php
 
-namespace frontend\controllers;
+namespace api\controllers;
 
-use frontend\models\AccessToken;
+use api\models\AccessToken;
 use yii\web\ForbiddenHttpException;
-use frontend\models\User;
+use api\models\User;
 use yii\filters\AccessControl;
 
 class AccessTokenController extends ApiController

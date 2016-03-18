@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\rbac;
+namespace api\rbac;
 
 
 interface HasOwnerInterface

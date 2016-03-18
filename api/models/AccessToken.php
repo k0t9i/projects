@@ -1,10 +1,10 @@
 <?php
 
-namespace frontend\models;
+namespace api\models;
 
 use Yii;
-use frontend\models\User;
-use frontend\rbac\HasOwnerInterface;
+use api\models\User;
+use api\rbac\HasOwnerInterface;
 
 /**
  * This is the model class for table "{{%access_token}}".

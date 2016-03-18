@@ -1,8 +1,8 @@
 <?php
 
-namespace frontend\controllers;
+namespace api\controllers;
 
-use frontend\models\DGender;
+use api\models\DGender;
 
 class GenderController extends ApiController
 {
