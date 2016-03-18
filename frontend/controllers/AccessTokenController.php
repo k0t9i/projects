@@ -17,7 +17,7 @@ class AccessTokenController extends ApiController
         $behaviors['authenticator']['except'] = ['create'];
         $behaviors['access'] = [
             'class' => AccessControl::className(),
-            'except' => ['create', 'options'],
+            'except' => ['create', 'options', 'self'],
             'rules' => [
                 [
                     'allow' => true,
@@ -111,6 +111,12 @@ class AccessTokenController extends ApiController
         $removed = $query->all();
       
         return array_diff($exist, $removed);
+    }
+    
+    public function actionSelf()
+    {
+        $identity = \Yii::$app->user->identity;
+        return $identity ? $identity->currentAccessToken : null;
     }
 
 }
