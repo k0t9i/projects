@@ -202,6 +202,11 @@ class User extends ActiveRecord implements IdentityInterface
             $this->_accessToken = AccessToken::findOne([
                         'token' => $this->_accessToken
             ]);
+            if (!$this->_accessToken) {
+                $this->_accessToken = $this->getAccessTokens()
+                        ->orderBy(AccessToken::tableName() . '.created_at DESC')
+                        ->one();
+            }
         }
 
         return $this->_accessToken;
