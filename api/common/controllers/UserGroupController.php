@@ -1,8 +1,8 @@
 <?php
 
-namespace api\controllers;
+namespace api\common\controllers;
 
-use api\models\UserGroup;
+use api\common\models\UserGroup;
 
 class UserGroupController extends ApiController
 {

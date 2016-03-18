@@ -1,8 +1,8 @@
 <?php
 
-namespace api\controllers;
+namespace api\common\controllers;
 
-use api\models\User;
+use api\common\models\User;
 
 class UserController extends ApiController
 {

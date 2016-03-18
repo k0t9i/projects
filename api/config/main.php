@@ -14,7 +14,7 @@ return [
     'controllerNamespace' => 'api\controllers',
     'components' => [
         'user' => [
-            'identityClass' => 'api\models\User',
+            'identityClass' => 'api\common\models\User',
             'enableSession' => false,
             'loginUrl' => null
         ],
@@ -52,25 +52,30 @@ return [
                 [
                     'class' => 'yii\rest\UrlRule', 
                     'controller' => [
-                        'user-group', 'gender'
+                        'v1/user-group', 'v1/gender'
                     ]
                 ],
                 [
                     'class' => 'yii\rest\UrlRule', 
-                    'controller' => ['user'],
+                    'controller' => ['v1/user'],
                     'extraPatterns' => [
                         'GET self' => 'self'
                     ]
                 ],
                 [
                     'class' => 'yii\rest\UrlRule', 
-                    'controller' => ['access-token'],
+                    'controller' => ['v1/access-token'],
                     'extraPatterns' => [
                         'DELETE delete-all' => 'delete-all',
                         'GET self' => 'self'
                     ]
                 ]
             ],
+        ],
+    ],
+    'modules' => [
+        'v1' => [
+            'class' => 'api\modules\v1\Module',
         ],
     ],
     'params' => $params,

@@ -1,6 +1,6 @@
 <?php
 
-namespace api\controllers;
+namespace api\common\controllers;
 
 use yii\rest\ActiveController;
 use yii\filters\auth\HttpBearerAuth;

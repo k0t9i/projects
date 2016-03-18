@@ -1,9 +1,9 @@
 <?php
 
-namespace api\models;
+namespace api\common\models;
 
 use Yii;
-use api\models\User;
+use api\common\models\User;
 use api\rbac\HasOwnerInterface;
 
 /**
