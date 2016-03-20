@@ -6,6 +6,7 @@ use Yii;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii\base\NotSupportedException;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -23,14 +24,18 @@ use yii\base\NotSupportedException;
  * @property-read UserGroup[] $userGroups
  * @property-read AccessToken[] $accessTokens
  * @property-read AccessToken $currentAccessToken
+ * @property array $groups
  */
 class User extends ActiveRecord implements IdentityInterface
 {
 
     const SCENARIO_CREATE = 'scenario-create';
+    const JUNCTION_USER_GROUP = '{{%j_user_user_group}}';
 
     public $passwordRepeat;
     private $_accessToken;
+    private $_groups;
+    private $_oldGroups = [];
 
     /**
      * @inheritdoc
@@ -43,7 +48,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['login', 'email'], 'required'],
+            [['login', 'email', 'groups'], 'required'],
             ['login', 'string', 'max' => 256],
             ['login', 'unique'],
             [['lastname', 'firstname', 'middlename'], 'string', 'max' => 1024],
@@ -53,7 +58,8 @@ class User extends ActiveRecord implements IdentityInterface
             ['email', 'string', 'max' => 1024],
             ['password', 'required', 'on' => static::SCENARIO_CREATE],
             ['passwordRepeat', 'safe'],
-            ['password', 'compare', 'compareAttribute' => 'passwordRepeat']
+            ['password', 'compare', 'compareAttribute' => 'passwordRepeat'],
+            ['groups', 'exist', 'targetClass' => UserGroup::className(), 'targetAttribute' => 'id', 'allowArray' => true]
         ];
     }
 
@@ -63,6 +69,38 @@ class User extends ActiveRecord implements IdentityInterface
             $this->password = \Yii::$app->security->generatePasswordHash($this->password);
         }
         return parent::beforeSave($insert);
+    }
+    
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        $insertIds = array_diff($this->groups, $this->_oldGroups);
+        if ($insertIds) {
+            $rows = [];
+            foreach ($insertIds as $id) {
+                $rows[] = [$this->id, $id];
+            }
+            static::getDb()
+                    ->createCommand()
+                    ->batchInsert(static::JUNCTION_USER_GROUP, ['id_user', 'id_user_group'], $rows)
+                    ->execute();
+        }
+        $deleteIds = array_diff($this->_oldGroups, $this->groups);
+        if ($deleteIds) {
+            static::getDb()
+                    ->createCommand()
+                    ->delete(static::JUNCTION_USER_GROUP, [
+                        'id_user_group' => $deleteIds,
+                        'id_user' => $this->id
+                    ])
+                    ->execute();
+        }
+    }
+    
+    public function afterFind()
+    {
+        parent::afterFind();
+        $this->_oldGroups = $this->groups;
     }
 
     /**
@@ -193,7 +231,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getUserGroups()
     {
-        return $this->hasMany(UserGroup::className(), ['id' => 'id_user_group'])->viaTable('{{%j_user_user_group}}', ['id_user' => 'id']);
+        return $this->hasMany(UserGroup::className(), ['id' => 'id_user_group'])->viaTable(static::JUNCTION_USER_GROUP, ['id_user' => 'id']);
     }
 
     public function getCurrentAccessToken()
@@ -210,6 +248,22 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         return $this->_accessToken;
+    }
+    
+    public function setGroups($value)
+    {
+        if (!is_array($value)) {
+            $value = [$value];
+        }
+        $this->_groups = $value;
+    }
+    
+    public function getGroups()
+    {
+        if (is_null($this->_groups)) {
+            $this->_groups = ArrayHelper::getColumn($this->getUserGroups()->asArray()->all(), 'id');
+        }
+        return $this->_groups;
     }
 
 }
