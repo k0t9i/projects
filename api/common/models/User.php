@@ -13,7 +13,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property integer $id
  * @property string $login
- * @property string $password
+ * @property string $password_hash
  * @property string $lastname
  * @property string $firstname
  * @property string $middlename
@@ -32,6 +32,7 @@ class User extends ActiveRecord implements IdentityInterface
     const SCENARIO_CREATE = 'scenario-create';
     const JUNCTION_USER_GROUP = '{{%j_user_user_group}}';
 
+    public $password;
     public $passwordRepeat;
     private $_accessToken;
     private $_groups;
@@ -65,8 +66,8 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function beforeSave($insert)
     {
-        if ($insert || $this->isAttributeChanged('password')) {
-            $this->password = \Yii::$app->security->generatePasswordHash($this->password);
+        if ($this->password) {
+            $this->password_hash = \Yii::$app->security->generatePasswordHash($this->password);
         }
         return parent::beforeSave($insert);
     }
@@ -187,8 +188,14 @@ class User extends ActiveRecord implements IdentityInterface
         ]);
 
         $ret = null;
-        if ($model && Yii::$app->security->validatePassword($password, $model->password)) {
-            $ret = $model;
+        if ($model) {
+            try {
+                if (Yii::$app->security->validatePassword($password, $model->password_hash)){
+                    $ret = $model;
+                }
+            } catch (\yii\base\InvalidParamException $ex) {
+
+            }
         }
 
         return $ret;
