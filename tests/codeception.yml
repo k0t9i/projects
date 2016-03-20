@@ -1,0 +1,21 @@
+actor: Tester
+paths:
+    tests: ./
+    log: ./_output
+    data: ./_data
+    support: ./_support
+    envs: ./_envs
+settings:
+    bootstrap: _bootstrap.php
+    colors: true
+    memory_limit: 1024M
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+modules:
+    config:
+        Db:
+            dsn: 'pgsql:host=localhost;dbname=test_projects_db'
+            dump: ./_data/dump.sql
+            user: 'test'
+            password:
