@@ -9,10 +9,23 @@ use yii\rbac\ManagerInterface;
 class Rbac extends Model
 {
 
+    public $db;
+    
+    public function init()
+    {
+        parent::init();
+        if (is_null($this->db)) {
+            $this->db = \Yii::$app->db;
+        } else {
+            $this->db = \yii\di\Instance::ensure($this->db, \yii\db\Connection::className());
+        }
+    }
+    
     public function initRoles()
     {
         /* @var $auth \yii\rbac\ManagerInterface */
         $auth = \Yii::$app->authManager;
+        $auth->db = $this->db;
         
         $auth->removeAll();
         

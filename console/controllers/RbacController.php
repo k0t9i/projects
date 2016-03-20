@@ -9,10 +9,18 @@ class RbacController extends Controller
 {
 
     public $defaultAction = 'init';
+    public $db;
 
     public function actionInit()
     {
-        (new Rbac())->initRoles();
+        (new Rbac(['db' => $this->db]))->initRoles();
+    }
+    
+    public function options()
+    {
+        return [
+            'db'
+        ];
     }
 
 }
