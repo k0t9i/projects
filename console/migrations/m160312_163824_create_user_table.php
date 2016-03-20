@@ -18,7 +18,9 @@ class m160312_163824_create_user_table extends Migration {
             'lastLogin' => $this->dateTime(),
         ]);
         $this->createIndex('idx-user-id_gender', '{{%user}}', 'id_gender');
-        $this->addForeignKey('fk-user-d_gender', '{{%user}}', 'id_gender', '{{%d_gender}}', 'id');
+        if (!$this->db->driverName == 'sqlite') {
+            $this->addForeignKey('fk-user-d_gender', '{{%user}}', 'id_gender', '{{%d_gender}}', 'id');
+        }
     }
 
     public function down()

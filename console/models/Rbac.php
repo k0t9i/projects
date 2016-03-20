@@ -65,9 +65,6 @@ class Rbac extends Model
         $auth->addChild($admin, $userRoles['create']);
         $auth->addChild($admin, $userRoles['update']);
         $auth->addChild($admin, $userRoles['delete']);
-        
-        $auth->assign($admin, 1);
-        //$auth->assign($performer, 3);
     }
     
     private function initAccessTokenRoles(ManagerInterface $manager, $key, array $rules)

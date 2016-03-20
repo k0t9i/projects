@@ -15,7 +15,9 @@ class m160314_163921_create_access_token_table extends Migration
 
         $this->addPrimaryKey('pk-access_token', '{{%access_token}}', 'token');
         $this->createIndex('idx-access_token-id_user', '{{%access_token}}', 'id_user');
-        $this->addForeignKey('fk-access_token-user', '{{%access_token}}', 'id_user', '{{%user}}', 'id');
+        if (!$this->db->driverName == 'sqlite') {
+            $this->addForeignKey('fk-access_token-user', '{{%access_token}}', 'id_user', '{{%user}}', 'id');
+        }
     }
 
     public function down()

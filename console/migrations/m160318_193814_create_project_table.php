@@ -25,8 +25,10 @@ class m160318_193814_create_project_table extends Migration
         
         $this->createIndex('idx-project_user-id_user-id_project', '{{%project_user}}', ['id_user', 'id_project'], true);
 
-        $this->addForeignKey('fk-project_user-id_user', '{{%project_user}}', 'id_user', '{{%user}}', 'id');
-        $this->addForeignKey('fk-project_user-id_project', '{{%project_user}}', 'id_project', '{{%project}}', 'id');
+        if (!$this->db->driverName == 'sqlite') {
+            $this->addForeignKey('fk-project_user-id_user', '{{%project_user}}', 'id_user', '{{%user}}', 'id');
+            $this->addForeignKey('fk-project_user-id_project', '{{%project_user}}', 'id_project', '{{%project}}', 'id');
+        }
         
         $this->createTable('{{%project_user_record}}', [
             'id' => $this->primaryKey(),
@@ -36,7 +38,9 @@ class m160318_193814_create_project_table extends Migration
         
         $this->createIndex('idx-project_user_record-id_project_user', '{{%project_user_record}}', 'id_project_user');
         
-        $this->addForeignKey('fk-project_user_record-id_project_user', '{{%project_user_record}}', 'id_project_user', '{{%project_user}}', 'id');
+        if (!$this->db->driverName == 'sqlite') {
+            $this->addForeignKey('fk-project_user_record-id_project_user', '{{%project_user_record}}', 'id_project_user', '{{%project_user}}', 'id');
+        }
     }
 
     public function safeDown()

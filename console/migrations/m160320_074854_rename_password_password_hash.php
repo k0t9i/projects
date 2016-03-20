@@ -6,11 +6,21 @@ class m160320_074854_rename_password_password_hash extends Migration
 {
     public function up()
     {
-        $this->renameColumn('{{%user}}', 'password', 'password_hash');
+        if (!$this->db->driverName == 'sqlite') {
+            $this->renameColumn('{{%user}}', 'password', 'password_hash');
+        } else {
+            $this->dropColumn('{{%user}}', 'password');
+            $this->addColumn('{{%user}}', 'password_hash', $this->string(64)->notNull());
+        }
     }
 
     public function down()
     {
-        $this->renameColumn('{{%user}}', 'password_hash', 'password');
+        if (!$this->db->driverName == 'sqlite') {
+            $this->renameColumn('{{%user}}', 'password_hash', 'password');
+        } else {
+            $this->dropColumn('{{%user}}', 'password_hash');
+            $this->addColumn('{{%user}}', 'password', $this->string(64)->notNull());
+        }
     }
 }
