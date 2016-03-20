@@ -84,7 +84,7 @@ class User extends ActiveRecord implements IdentityInterface
             static::getDb()
                     ->createCommand()
                     ->batchInsert(static::JUNCTION_USER_GROUP, ['id_user', 'id_user_group'], $rows)
-                    ->execute();
+                    ->execute();            
         }
         $deleteIds = array_diff($this->_oldGroups, $this->groups);
         if ($deleteIds) {
@@ -95,6 +95,17 @@ class User extends ActiveRecord implements IdentityInterface
                         'id_user' => $this->id
                     ])
                     ->execute();
+        }
+        
+        if ($insertIds || $deleteIds) {
+            /**
+             * @todo Remove roles only for deleted groups
+             */
+            Yii::$app->authManager->revokeAll($this->id);
+            /* @var $userGroup UserGroup */
+            foreach ($this->userGroups as $userGroup) {
+                Yii::$app->authManager->assign($userGroup->mainRole, $this->id);
+            }
         }
     }
     
