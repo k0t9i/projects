@@ -54,12 +54,17 @@ class Rbac extends Model
         
         $tokenRoles = $this->initAccessTokenRoles($auth, 'access-token', $rules);
         $userRoles = $this->initUserRoles($auth, 'user', $rules);
+        $projectRoles = $this->initProjectRoles($auth, 'project', $rules);
         
         $auth->addChild($performer, $tokenRoles['deleteOwn']);
         $auth->addChild($performer, $tokenRoles['viewOwn']);
+        $auth->addChild($performer, $projectRoles['viewOwn']);
         
         $auth->addChild($manager, $tokenRoles['deleteOwn']);
         $auth->addChild($manager, $tokenRoles['viewOwn']);
+        $auth->addChild($manager, $projectRoles['create']);
+        $auth->addChild($manager, $projectRoles['viewOwn']);
+        $auth->addChild($manager, $projectRoles['updateOwn']);
         
         $auth->addChild($chief, $tokenRoles['deleteOwn']);
         $auth->addChild($chief, $tokenRoles['viewOwn']);
@@ -68,6 +73,11 @@ class Rbac extends Model
         $auth->addChild($chief, $userRoles['create']);
         $auth->addChild($chief, $userRoles['update']);
         $auth->addChild($chief, $userRoles['delete']);
+        $auth->addChild($chief, $projectRoles['view']);
+        $auth->addChild($chief, $projectRoles['viewAll']);
+        $auth->addChild($chief, $projectRoles['create']);
+        $auth->addChild($chief, $projectRoles['update']);
+        $auth->addChild($chief, $projectRoles['delete']);
         
         $auth->addChild($admin, $tokenRoles['delete']);
         $auth->addChild($admin, $tokenRoles['deleteAll']);
@@ -78,6 +88,11 @@ class Rbac extends Model
         $auth->addChild($admin, $userRoles['create']);
         $auth->addChild($admin, $userRoles['update']);
         $auth->addChild($admin, $userRoles['delete']);
+        $auth->addChild($admin, $projectRoles['view']);
+        $auth->addChild($admin, $projectRoles['viewAll']);
+        $auth->addChild($admin, $projectRoles['create']);
+        $auth->addChild($admin, $projectRoles['update']);
+        $auth->addChild($admin, $projectRoles['delete']);
     }
     
     private function initAccessTokenRoles(ManagerInterface $manager, $key, array $rules)
@@ -137,6 +152,45 @@ class Rbac extends Model
         
         $ret['delete'] = $manager->createPermission($key . '.delete');
         $ret['delete']->description = 'Delete user';
+        $manager->add($ret['delete']);
+        
+        return $ret;        
+    }
+    
+    private function initProjectRoles(ManagerInterface $manager, $key, array $rules)
+    {
+        $ret = [];
+        
+        $ret['create'] = $manager->createPermission($key . '.create');
+        $ret['create']->description = 'Create project';
+        $manager->add($ret['create']);
+        
+        $ret['viewAll'] = $manager->createPermission($key . '.viewAll');
+        $ret['viewAll']->description = 'View all projects';
+        $manager->add($ret['viewAll']);
+        
+        $ret['view'] = $manager->createPermission($key . '.view');
+        $ret['view']->description = 'View project';
+        $manager->add($ret['view']);
+        
+        $ret['viewOwn'] = $manager->createPermission($key . '.viewOwn');
+        $ret['viewOwn']->description = 'View own project';
+        $ret['viewOwn']->ruleName = $rules['ownerRule']->name;
+        $manager->add($ret['viewOwn']);
+        $manager->addChild($ret['viewOwn'], $ret['view']);
+        
+        $ret['update'] = $manager->createPermission($key . '.update');
+        $ret['update']->description = 'Update project';
+        $manager->add($ret['update']);
+        
+        $ret['updateOwn'] = $manager->createPermission($key . '.updateOwn');
+        $ret['updateOwn']->description = 'Update own project';
+        $ret['updateOwn']->ruleName = $rules['ownerRule']->name;
+        $manager->add($ret['updateOwn']);
+        $manager->addChild($ret['updateOwn'], $ret['update']);
+        
+        $ret['delete'] = $manager->createPermission($key . '.delete');
+        $ret['delete']->description = 'Delete project';
         $manager->add($ret['delete']);
         
         return $ret;        

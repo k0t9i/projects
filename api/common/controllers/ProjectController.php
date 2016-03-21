@@ -36,7 +36,9 @@ class ProjectController extends ApiController
                 [
                     'allow' => true,
                     'actions' => ['update'],
-                    'roles' => ['project.update']
+                    'matchCallback' => function() {
+                        return \Yii::$app->user->can('project.update', ['model' => $this->findModel()]);
+                    }
                 ],
                 [
                     'allow' => true,

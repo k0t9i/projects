@@ -28,7 +28,7 @@ class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterfac
 
     public function getProjectUsers()
     {
-        return $this->hasMany(ProjectUser::className(), ['id' => 'id_project']);
+        return $this->hasMany(ProjectUser::className(), ['id_project' => 'id']);
     }
 
     public function isOwner($userId)
