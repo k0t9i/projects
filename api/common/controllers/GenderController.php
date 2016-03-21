@@ -2,16 +2,11 @@
 
 namespace api\common\controllers;
 
-use api\common\models\DGender;
-
 class GenderController extends ApiController
 {
 
-    public function init()
-    {
-        $this->modelClass = DGender::className();
-    }
-    
+    public $modelClass = 'api\common\models\DGender';
+
     public function actions()
     {
         $actions = parent::actions();
@@ -19,7 +14,7 @@ class GenderController extends ApiController
         unset($actions['create']);
         unset($actions['update']);
         unset($actions['delete']);
-        
+
         return $actions;
     }
 

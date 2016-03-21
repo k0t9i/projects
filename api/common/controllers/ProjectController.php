@@ -3,6 +3,7 @@
 namespace api\common\controllers;
 
 use yii\filters\AccessControl;
+use yii\data\ActiveDataProvider;
 
 class ProjectController extends ApiController
 {
@@ -62,7 +63,7 @@ class ProjectController extends ApiController
     
     public function actionUsers()
     {
-        return new \yii\data\ActiveDataProvider([
+        return new ActiveDataProvider([
             'query' => $this->findModel()->getUsers()
         ]);
     }

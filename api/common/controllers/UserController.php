@@ -2,11 +2,13 @@
 
 namespace api\common\controllers;
 
-use api\common\models\User;
 use yii\filters\AccessControl;
+use yii\data\ActiveDataProvider;
 
 class UserController extends ApiController
 {
+    
+    public $modelClass = 'api\common\models\User';
     
     public function behaviors()
     {
@@ -57,11 +59,6 @@ class UserController extends ApiController
         return $verbs;
     }
     
-    public function init()
-    {
-        $this->modelClass = User::className();
-    }
-    
     public function actionSelf()
     {
         return \Yii::$app->user->identity;
@@ -70,15 +67,16 @@ class UserController extends ApiController
     public function actions()
     {
         $actions = parent::actions();
-
-        $actions['create']['scenario'] = User::SCENARIO_CREATE;
+        $modelClass = $this->modelClass;
+        
+        $actions['create']['scenario'] = $modelClass::SCENARIO_CREATE;
 
         return $actions;
     }
     
     public function actionProjects()
     {
-        return new \yii\data\ActiveDataProvider([
+        return new ActiveDataProvider([
             'query' => $this->findModel()->getProjects()
         ]);
     }

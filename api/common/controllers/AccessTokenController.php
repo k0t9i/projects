@@ -2,13 +2,13 @@
 
 namespace api\common\controllers;
 
-use api\common\models\AccessToken;
 use yii\web\ForbiddenHttpException;
-use api\common\models\User;
 use yii\filters\AccessControl;
 
 class AccessTokenController extends ApiController
 {
+
+    public $modelClass = 'api\common\models\AccessToken';
 
     public function behaviors()
     {
@@ -48,29 +48,25 @@ class AccessTokenController extends ApiController
 
         return $behaviors;
     }
-    
+
     public function verbs()
     {
         $verbs = parent::verbs();
-        
-        $verbs['delete-all'] = ['DELETE'];
-        
-        return $verbs;
-    }
 
-    public function init()
-    {
-        $this->modelClass = AccessToken::className();
+        $verbs['delete-all'] = ['DELETE'];
+
+        return $verbs;
     }
 
     public function actions()
     {
         $actions = parent::actions();
+        $modelClass = $this->modelClass;
 
         unset($actions['update']);
 
         $actions['create']['checkAccess'] = [$this, 'checkAccessForCreate'];
-        $actions['create']['scenario'] = AccessToken::SCENARIO_CREATE;
+        $actions['create']['scenario'] = $modelClass::SCENARIO_CREATE;
 
         return $actions;
     }
@@ -83,7 +79,8 @@ class AccessTokenController extends ApiController
         $login = \Yii::$app->request->post('login');
         $password = \Yii::$app->request->post('password');
 
-        $user = User::findByLoginAndPassword($login, $password);
+        $userClass = \Yii::$app->user->identityClass;
+        $user = $userClass::findByLoginAndPassword($login, $password);
 
         if (!$user) {
             throw new ForbiddenHttpException();
@@ -93,23 +90,23 @@ class AccessTokenController extends ApiController
         $params['id_user'] = $user->id;
         \Yii::$app->request->bodyParams = $params;
     }
-    
+
     public function actionDeleteAll()
     {
         $modelClass = $this->modelClass;
-        
+
         $currentToken = \Yii::$app->user->identity->currentAccessToken;
-        
+
         $query = $modelClass::find()
                 ->select('id')
                 ->where('id <> :id', [':id' => $currentToken->id])
                 ->indexBy('id')
                 ->asArray();
-        
+
         $exist = $query->all();
-        AccessToken::deleteAll('id <> :id', [':id' => $currentToken->id]);
+        $modelClass::deleteAll('id <> :id', [':id' => $currentToken->id]);
         $removed = $query->all();
-      
+
         return array_diff($exist, $removed);
     }
 
