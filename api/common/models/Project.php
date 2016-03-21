@@ -40,5 +40,24 @@ class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterfac
                 ->all();
         return array_key_exists($userId, $ids);
     }
+    
+    /**
+     * @inheritdoc
+     */
+    public function fields()
+    {
+        return [
+            'id' => 'id',
+            'name' => 'name',
+            'description' => 'description',
+            'startedAt' => function($model) {
+                return Yii::$app->formatter->format($model->started_at, 'datetime');
+            },
+            'ednedAt' => function($model) {
+                return Yii::$app->formatter->format($model->ended_at, 'datetime');
+            },
+            'isActive' => 'is_active'
+        ];
+    }
 
 }
