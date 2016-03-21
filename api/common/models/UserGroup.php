@@ -30,7 +30,8 @@ class UserGroup extends \yii\db\ActiveRecord
      */
     public function getUsers()
     {
-        return $this->hasMany(User::className(), ['id' => 'id_user'])->viaTable('{{%j_user_user_group}}', ['id_user_group' => 'id']);
+        return $this->hasMany(User::className(), ['id' => 'id_user'])
+                ->viaTable('{{%j_user_user_group}}', ['id_user_group' => 'id']);
     }
 
     /**

@@ -70,7 +70,8 @@ return [
                     ]
                 ],
                 'GET v1/projects/<id:\d+>/users' => 'v1/project/users',
-                'GET v1/users/<id:\d+>/projects' => 'v1/user/projects'
+                'GET v1/users/<id:\d+>/projects' => 'v1/user/projects',
+                'GET v1/user-groups/<id:\d+>/users' => 'v1/user-group/users'
             ],
         ],
     ],
