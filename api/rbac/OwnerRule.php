@@ -12,7 +12,7 @@ class OwnerRule extends Rule
     public function execute($user, $item, $params)
     {
         if (isset($params['model']) && $params['model'] instanceof HasOwnerInterface) {
-            return $params['model']->getOwnerId() == $user;
+            return $params['model']->isOwner($user);
         }
         
         throw new \InvalidArgumentException('Params must have model attribute and model attribute must be instance of HasOwnerInterface');

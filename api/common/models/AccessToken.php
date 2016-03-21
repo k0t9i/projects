@@ -66,9 +66,9 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
         $this->token = hash('sha256', uniqid(microtime(true), true));
     }
 
-    public function getOwnerId()
+    public function isOwner($userId)
     {
-        return $this->id_user;
+        return $this->id_user == $userId;
     }
     
     public function fields()

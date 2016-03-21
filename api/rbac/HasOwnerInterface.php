@@ -5,5 +5,5 @@ namespace api\rbac;
 
 interface HasOwnerInterface
 {
-    public function getOwnerId();
+    public function isOwner($userId);
 }
