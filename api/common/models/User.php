@@ -25,6 +25,8 @@ use yii\helpers\ArrayHelper;
  * @property-read AccessToken[] $accessTokens
  * @property-read AccessToken $currentAccessToken
  * @property array $groups
+ * @property-read ProjectUser[] $projectUsers
+ * @property-read Project[] $projects
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -233,7 +235,7 @@ class User extends ActiveRecord implements IdentityInterface
                     $timestamp = $model->currentAccessToken->created_at;
                 }
                 return Yii::$app->formatter->format($timestamp, 'datetime');
-            },
+            }
         ];
     }
 
@@ -282,6 +284,17 @@ class User extends ActiveRecord implements IdentityInterface
             $this->_groups = ArrayHelper::getColumn($this->getUserGroups()->asArray()->all(), 'id');
         }
         return $this->_groups;
+    }
+    
+    public function getProjectUsers()
+    {
+        return $this->hasMany(ProjectUser::className(), ['id_user' => 'id']);
+    }
+    
+    public function getProjects()
+    {
+        return $this->hasMany(Project::className(), ['id' => 'id_project'])
+                ->via('projectUsers');
     }
 
 }

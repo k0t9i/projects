@@ -14,7 +14,7 @@ class UserController extends ApiController
 
         $behaviors['access'] = [
             'class' => AccessControl::className(),
-            'except' => ['options', 'self'],
+            'except' => ['options', 'self', 'projects'],
             'rules' => [
                 [
                     'allow' => true,
@@ -52,6 +52,7 @@ class UserController extends ApiController
         $verbs = parent::verbs();
         
         $verbs['self'] = ['GET'];
+        $verbs['projects'] = ['GET'];
         
         return $verbs;
     }
@@ -73,6 +74,13 @@ class UserController extends ApiController
         $actions['create']['scenario'] = User::SCENARIO_CREATE;
 
         return $actions;
+    }
+    
+    public function actionProjects()
+    {
+        return new \yii\data\ActiveDataProvider([
+            'query' => $this->findModel()->getProjects()
+        ]);
     }
 
 }

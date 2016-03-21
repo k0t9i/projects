@@ -14,7 +14,7 @@ class ProjectController extends ApiController
 
         $behaviors['access'] = [
             'class' => AccessControl::className(),
-            'except' => ['options'],
+            'except' => ['options', 'users'],
             'rules' => [
                 [
                     'allow' => true,
@@ -49,6 +49,22 @@ class ProjectController extends ApiController
         ];
 
         return $behaviors;
+    }
+    
+    public function verbs()
+    {
+        $verbs = parent::verbs();
+        
+        $verbs['users'] = ['GET'];
+        
+        return $verbs;
+    }
+    
+    public function actionUsers()
+    {
+        return new \yii\data\ActiveDataProvider([
+            'query' => $this->findModel()->getUsers()
+        ]);
     }
 
 }

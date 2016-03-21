@@ -15,6 +15,7 @@ use Yii;
  * @property boolean $is_active
  * 
  * @property-read ProjectUser[] $projectUsers
+ * @property-read User[] $users
  */
 class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterface
 {
@@ -29,6 +30,12 @@ class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterfac
     public function getProjectUsers()
     {
         return $this->hasMany(ProjectUser::className(), ['id_project' => 'id']);
+    }
+    
+    public function getUsers()
+    {
+        return $this->hasMany(User::className(), ['id' => 'id_user'])
+                ->via('projectUsers');
     }
 
     public function isOwner($userId)
