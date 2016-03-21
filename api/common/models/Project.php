@@ -13,8 +13,10 @@ use Yii;
  * @property integer $started_at
  * @property integer $ended_at
  * @property boolean $is_active
+ * 
+ * @property-read ProjectUser[] $projectUsers
  */
-class Project extends \yii\db\ActiveRecord
+class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterface
 {
     /**
      * @inheritdoc
@@ -24,32 +26,19 @@ class Project extends \yii\db\ActiveRecord
         return '{{%project}}';
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function rules()
+    public function getProjectUsers()
     {
-        return [
-            [['name', 'started_at'], 'required'],
-            [['description'], 'string'],
-            [['started_at', 'ended_at'], 'integer'],
-            [['is_active'], 'boolean'],
-            [['name'], 'string', 'max' => 1024]
-        ];
+        return $this->hasMany(ProjectUser::className(), ['id' => 'id_project']);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
+    public function isOwner($userId)
     {
-        return [
-            'id' => 'ID',
-            'name' => 'Name',
-            'description' => 'Description',
-            'started_at' => 'Started At',
-            'ended_at' => 'Ended At',
-            'is_active' => 'Is Active',
-        ];
+        $ids = $this->getProjectUsers()
+                ->select('id_user')
+                ->indexBy('id_user')
+                ->asArray()
+                ->all();
+        return array_key_exists($userId, $ids);
     }
+
 }
