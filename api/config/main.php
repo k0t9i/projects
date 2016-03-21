@@ -52,7 +52,7 @@ return [
                 [
                     'class' => 'yii\rest\UrlRule', 
                     'controller' => [
-                        'v1/user-group', 'v1/gender', 'v1/project'
+                        'v1/user-group', 'v1/gender', 'v1/project', 'v1/auth-item'
                     ]
                 ],
                 [
