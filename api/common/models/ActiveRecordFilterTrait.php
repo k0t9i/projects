@@ -46,8 +46,10 @@ trait ActiveRecordFilterTrait {
     protected function prepareFilterQuery(ActiveQuery $query)
     {
         foreach ($this->safeAttributes() as $attribute) {
-            if (isset($this->{$attribute})) {
-                $query->andWhere([static::tableName() . '.' . $attribute => $this->{$attribute}]);
+            $column = static::getTableSchema()->getColumn($attribute);
+            if (isset($this->{$attribute}) && $column) {
+                $value = $column->dbTypecast($this->{$attribute});
+                $query->andWhere([static::tableName() . '.' . $attribute => $value]);
             }
         }
     }
