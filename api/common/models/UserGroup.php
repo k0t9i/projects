@@ -42,6 +42,15 @@ class UserGroup extends \yii\db\ActiveRecord
         return Yii::$app->authManager->getRole($this->main_role);
     }
     
+    public function getPermissions()
+    {
+        $names = array_keys(Yii::$app->authManager->getPermissionsByRole($this->main_role));
+        
+        return AuthItem::find()->permissions()->andWhere([
+            'name' => $names
+        ]);
+    }
+    
     /**
      * @inheritdoc
      */
