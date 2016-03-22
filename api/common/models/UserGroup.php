@@ -14,7 +14,7 @@ use Yii;
  * @property User[] $users
  * @property \yii\rbac\Role|null $mainRole
  */
-class UserGroup extends \yii\db\ActiveRecord
+class UserGroup extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterface
 {
 
     /**
@@ -31,7 +31,7 @@ class UserGroup extends \yii\db\ActiveRecord
     public function getUsers()
     {
         return $this->hasMany(User::className(), ['id' => 'id_user'])
-                ->viaTable('{{%j_user_user_group}}', ['id_user_group' => 'id']);
+                ->viaTable(User::JUNCTION_USER_GROUP, ['id_user_group' => 'id']);
     }
 
     /**
@@ -61,6 +61,13 @@ class UserGroup extends \yii\db\ActiveRecord
             'name' => 'name',
             'mainRole' => 'main_role'
         ];
+    }
+
+    public function isOwner($userId)
+    {
+        return $this->getUsers()->andWhere([
+            User::tableName() . '.id' => (int) $userId
+        ])->exists();
     }
 
 }

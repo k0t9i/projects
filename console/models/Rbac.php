@@ -55,16 +55,19 @@ class Rbac extends Model
         $tokenRoles = $this->initAccessTokenRoles($auth, 'access-token', $rules);
         $userRoles = $this->initUserRoles($auth, 'user', $rules);
         $projectRoles = $this->initProjectRoles($auth, 'project', $rules);
+        $userGroupRoles = $this->initUserGroupRoles($auth, 'user-group', $rules);
         
         $auth->addChild($performer, $tokenRoles['deleteOwn']);
         $auth->addChild($performer, $tokenRoles['viewOwn']);
         $auth->addChild($performer, $projectRoles['viewOwn']);
+        $auth->addChild($performer, $userGroupRoles['ownPermissions']);
         
         $auth->addChild($manager, $tokenRoles['deleteOwn']);
         $auth->addChild($manager, $tokenRoles['viewOwn']);
         $auth->addChild($manager, $projectRoles['create']);
         $auth->addChild($manager, $projectRoles['viewOwn']);
         $auth->addChild($manager, $projectRoles['updateOwn']);
+        $auth->addChild($manager, $userGroupRoles['ownPermissions']);
         
         $auth->addChild($chief, $tokenRoles['deleteOwn']);
         $auth->addChild($chief, $tokenRoles['viewOwn']);
@@ -72,12 +75,12 @@ class Rbac extends Model
         $auth->addChild($chief, $userRoles['viewAll']);
         $auth->addChild($chief, $userRoles['create']);
         $auth->addChild($chief, $userRoles['update']);
-        $auth->addChild($chief, $userRoles['delete']);
         $auth->addChild($chief, $projectRoles['view']);
         $auth->addChild($chief, $projectRoles['viewAll']);
         $auth->addChild($chief, $projectRoles['create']);
         $auth->addChild($chief, $projectRoles['update']);
-        $auth->addChild($chief, $projectRoles['delete']);
+        $auth->addChild($chief, $userGroupRoles['users']);
+        $auth->addChild($chief, $userGroupRoles['permissions']);
         
         $auth->addChild($admin, $tokenRoles['delete']);
         $auth->addChild($admin, $tokenRoles['deleteAll']);
@@ -93,6 +96,8 @@ class Rbac extends Model
         $auth->addChild($admin, $projectRoles['create']);
         $auth->addChild($admin, $projectRoles['update']);
         $auth->addChild($admin, $projectRoles['delete']);
+        $auth->addChild($admin, $userGroupRoles['users']);
+        $auth->addChild($admin, $userGroupRoles['permissions']);
     }
     
     private function initAccessTokenRoles(ManagerInterface $manager, $key, array $rules)
@@ -193,6 +198,27 @@ class Rbac extends Model
         $ret['delete']->description = 'Delete project';
         $manager->add($ret['delete']);
         
+        return $ret;        
+    }
+    
+    private function initUserGroupRoles(ManagerInterface $manager, $key, array $rules)
+    {
+        $ret = [];
+        
+        $ret['users'] = $manager->createPermission($key . '.users');
+        $ret['users']->description = 'View user group users';
+        $manager->add($ret['users']);
+        
+        $ret['permissions'] = $manager->createPermission($key . '.permissions');
+        $ret['permissions']->description = 'View user group permissions';
+        $manager->add($ret['permissions']);
+         
+        $ret['ownPermissions'] = $manager->createPermission($key . '.ownPermissions');
+        $ret['ownPermissions']->description = 'View own user group permissions';
+        $ret['ownPermissions']->ruleName = $rules['ownerRule']->name;
+        $manager->add($ret['ownPermissions']);
+        $manager->addChild($ret['ownPermissions'], $ret['permissions']);
+   
         return $ret;        
     }
 
