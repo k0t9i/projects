@@ -3,7 +3,6 @@
 namespace api\common\controllers;
 
 use yii\filters\AccessControl;
-use yii\data\ActiveDataProvider;
 
 class UserController extends ApiController
 {
@@ -76,9 +75,7 @@ class UserController extends ApiController
     
     public function actionProjects()
     {
-        return new ActiveDataProvider([
-            'query' => $this->findModel()->getProjects()
-        ]);
+        return $this->prepareDataProvider($this->findModel()->getProjects());
     }
 
 }

@@ -10,7 +10,6 @@ use yii\rest\Action;
 
 class ApiController extends ActiveController
 {
-
     private $_action;
 
     public function behaviors()
@@ -37,5 +36,32 @@ class ApiController extends ActiveController
         }
         return $this->_action->findModel(\Yii::$app->request->get('id'));
     }
-
+    
+    public function actions() {
+        $actions = parent::actions();
+        
+        $actions['index']['prepareDataProvider'] = function () {
+            return $this->prepareDataProvider();
+        };
+        
+        return $actions;
+    }
+    
+    protected function prepareDataProvider(\yii\db\ActiveQuery $query = null)
+    {    
+        $modelClass = $query ? $query->modelClass : $this->modelClass;
+        $model = new $modelClass();
+        if ($model instanceof \api\common\models\Filterable) {
+            $params = json_decode(\Yii::$app->request->get('filter'), true);
+            $model->scenario = $modelClass::SCENARIO_FILTER;
+            $model->load($params, '');
+            
+            $dp = $model->search($query);
+        } else {
+            $dp = new \yii\data\ActiveDataProvider([
+                'query' => $query ? $query : $model->find()
+            ]);
+        }
+        return $dp;
+    }
 }

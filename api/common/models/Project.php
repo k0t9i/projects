@@ -17,8 +17,10 @@ use Yii;
  * @property-read ProjectUser[] $projectUsers
  * @property-read User[] $users
  */
-class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterface
+class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterface, Filterable
 {
+    use ActiveRecordFilterTrait;
+    
     /**
      * @inheritdoc
      */
@@ -64,6 +66,13 @@ class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterfac
                 return Yii::$app->formatter->format($model->ended_at, 'datetime');
             },
             'isActive' => 'is_active'
+        ];
+    }
+
+    protected function filterField()
+    {
+        return [
+            'name'
         ];
     }
 

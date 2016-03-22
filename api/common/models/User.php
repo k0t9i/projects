@@ -3,7 +3,6 @@
 namespace api\common\models;
 
 use Yii;
-use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii\base\NotSupportedException;
 use yii\helpers\ArrayHelper;
@@ -28,9 +27,10 @@ use yii\helpers\ArrayHelper;
  * @property-read ProjectUser[] $projectUsers
  * @property-read Project[] $projects
  */
-class User extends ActiveRecord implements IdentityInterface
+class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
 {
-
+    use ActiveRecordFilterTrait;
+    
     const SCENARIO_CREATE = 'scenario-create';
     const JUNCTION_USER_GROUP = '{{%j_user_user_group}}';
 
@@ -295,6 +295,31 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasMany(Project::className(), ['id' => 'id_project'])
                 ->via('projectUsers');
+    }
+
+    protected function filterField()
+    {
+        return [
+            'login', 'lastname', 'firstname', 'middlename', 'email'
+        ];
+    }
+    
+    protected function prepareFilterQuery(\yii\db\ActiveQuery $query) {
+        if ($this->login) {
+            $query->andWhere(['like', 'login', $this->login]);
+        }
+        if ($this->lastname) {
+            $query->andWhere(['like', 'lastname', $this->lastname]);
+        }
+        if ($this->firstname) {
+            $query->andWhere(['like', 'firstname', $this->firstname]);
+        }
+        if ($this->middlename) {
+            $query->andWhere(['like', 'middlename', $this->middlename]);
+        }
+        if ($this->email) {
+            $query->andWhere(['like', 'email', $this->email]);
+        }
     }
 
 }
