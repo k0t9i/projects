@@ -71,7 +71,9 @@ return [
                 ],
                 'GET v1/projects/<id:\d+>/users' => 'v1/project/users',
                 'GET v1/users/<id:\d+>/projects' => 'v1/user/projects',
-                'GET v1/user-groups/<id:\d+>/users' => 'v1/user-group/users'
+                'GET v1/user-groups/<id:\d+>/users' => 'v1/user-group/users',
+                'GET v1/auth-items/roles' => 'v1/auth-item/roles',
+                'GET v1/auth-items/permissions' => 'v1/auth-item/permissions',
             ],
         ],
     ],

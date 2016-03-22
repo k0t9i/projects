@@ -4,6 +4,7 @@ namespace api\common\models;
 
 use Yii;
 use yii\rbac\Role;
+use api\common\models\queries\AuthItemQuery;
 
 /**
  * This is the model class for table "{{%auth_item}}".
@@ -22,6 +23,11 @@ class AuthItem extends \yii\db\ActiveRecord
     const TYPE_ROLE = Role::TYPE_ROLE;
     const TYPE_PERMISSION = Role::TYPE_PERMISSION;
 
+    public static function find()
+    {
+        return new AuthItemQuery(get_called_class());
+    }
+
     /**
      * @inheritdoc
      */
@@ -29,7 +35,7 @@ class AuthItem extends \yii\db\ActiveRecord
     {
         return '{{%auth_item}}';
     }
-    
+
     public function fields()
     {
         return [
