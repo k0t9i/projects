@@ -44,6 +44,7 @@ class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterfac
     {
         $ids = $this->getProjectUsers()
                 ->select('id_user')
+                ->where(['is_active' => true])
                 ->indexBy('id_user')
                 ->asArray()
                 ->all();
