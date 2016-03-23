@@ -12,11 +12,11 @@ use yii\helpers\ArrayHelper;
  *
  * @property integer $id
  * @property string $login
- * @property string $password_hash
+ * @property string $passwordHash
  * @property string $lastname
  * @property string $firstname
  * @property string $middlename
- * @property integer $id_gender
+ * @property integer $idGender
  * @property string $email
  *
  * @property-read DGender $gender
@@ -55,7 +55,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
             ['login', 'string', 'max' => 256],
             ['login', 'unique'],
             [['lastname', 'firstname', 'middlename'], 'string', 'max' => 1024],
-            ['id_gender', 'exist', 'targetClass' => DGender::className(), 'targetAttribute' => 'id'],
+            ['idGender', 'exist', 'targetClass' => DGender::className(), 'targetAttribute' => 'id'],
             ['email', 'unique'],
             ['email', 'email'],
             ['email', 'string', 'max' => 1024],
@@ -69,7 +69,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
     public function beforeSave($insert)
     {
         if ($this->password) {
-            $this->password_hash = \Yii::$app->security->generatePasswordHash($this->password);
+            $this->passwordHash = \Yii::$app->security->generatePasswordHash($this->password);
         }
         return parent::beforeSave($insert);
     }
@@ -85,7 +85,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
             }
             static::getDb()
                     ->createCommand()
-                    ->batchInsert(static::JUNCTION_USER_GROUP, ['id_user', 'id_user_group'], $rows)
+                    ->batchInsert(static::JUNCTION_USER_GROUP, ['idUser', 'idUserGroup'], $rows)
                     ->execute();            
         }
         $deleteIds = array_diff($this->_oldGroups, $this->groups);
@@ -93,8 +93,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
             static::getDb()
                     ->createCommand()
                     ->delete(static::JUNCTION_USER_GROUP, [
-                        'id_user_group' => $deleteIds,
-                        'id_user' => $this->id
+                        'idUserGroup' => $deleteIds,
+                        'idUser' => $this->id
                     ])
                     ->execute();
         }
@@ -106,7 +106,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
             Yii::$app->authManager->revokeAll($this->id);
             /* @var $userGroup UserGroup */
             foreach ($this->userGroups as $userGroup) {
-                Yii::$app->authManager->assign($userGroup->mainRole, $this->id);
+                Yii::$app->authManager->assign($userGroup->getMainRole(), $this->id);
             }
         }
     }
@@ -122,7 +122,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
      */
     public function getGender()
     {
-        return $this->hasOne(DGender::className(), ['id' => 'id_gender']);
+        return $this->hasOne(DGender::className(), ['id' => 'idGender']);
     }
 
     /**
@@ -130,7 +130,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
      */
     public function getAccessTokens()
     {
-        return $this->hasMany(AccessToken::className(), ['id_user' => 'id']);
+        return $this->hasMany(AccessToken::className(), ['idUser' => 'id']);
     }
 
     /**
@@ -161,7 +161,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
                     }
                 ])
                 ->where(['at.token' => $token])
-                ->andWhere('at.expires_in > :now', [':now' => time()])
+                ->andWhere('at."expiresIn" > :now', [':now' => time()])
                 ->one();
         if ($ret) {
             $ret->_accessToken = $token;
@@ -203,7 +203,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
         $ret = null;
         if ($model) {
             try {
-                if (Yii::$app->security->validatePassword($password, $model->password_hash)){
+                if (Yii::$app->security->validatePassword($password, $model->passwordHash)){
                     $ret = $model;
                 }
             } catch (\yii\base\InvalidParamException $ex) {
@@ -232,7 +232,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
             'lastLogin' => function($model) {
                 $timestamp = null;
                 if ($model->currentAccessToken) {
-                    $timestamp = $model->currentAccessToken->created_at;
+                    $timestamp = $model->currentAccessToken->createdAt;
                 }
                 return Yii::$app->formatter->format($timestamp, 'datetime');
             }
@@ -251,7 +251,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
      */
     public function getUserGroups()
     {
-        return $this->hasMany(UserGroup::className(), ['id' => 'id_user_group'])->viaTable(static::JUNCTION_USER_GROUP, ['id_user' => 'id']);
+        return $this->hasMany(UserGroup::className(), ['id' => 'idUserGroup'])->viaTable(static::JUNCTION_USER_GROUP, ['idUser' => 'id']);
     }
 
     public function getCurrentAccessToken()
@@ -262,7 +262,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
             ]);
             if (!$this->_accessToken) {
                 $this->_accessToken = $this->getAccessTokens()
-                        ->orderBy(AccessToken::tableName() . '.created_at DESC')
+                        ->orderBy(AccessToken::tableName() . '."createdAt" DESC')
                         ->one();
             }
         }
@@ -288,12 +288,12 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
     
     public function getProjectUsers()
     {
-        return $this->hasMany(ProjectUser::className(), ['id_user' => 'id']);
+        return $this->hasMany(ProjectUser::className(), ['idUser' => 'id']);
     }
     
     public function getProjects()
     {
-        return $this->hasMany(Project::className(), ['id' => 'id_project'])
+        return $this->hasMany(Project::className(), ['id' => 'idProject'])
                 ->via('projectUsers');
     }
 

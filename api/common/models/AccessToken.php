@@ -11,9 +11,9 @@ use api\rbac\HasOwnerInterface;
  *
  * @property integer $id
  * @property string $token
- * @property integer $id_user
- * @property integer $expires_in
- * @property integer $created_at
+ * @property integer $idUser
+ * @property integer $expiresIn
+ * @property integer $createdAt
  *
  * @property User $user
  */
@@ -28,7 +28,7 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
     public function rules()
     {
         return [
-            ['id_user', 'exist', 'targetClass' => User::className(), 'targetAttribute' => 'id', 'on' => static::SCENARIO_CREATE]
+            ['idUser', 'exist', 'targetClass' => User::className(), 'targetAttribute' => 'id', 'on' => static::SCENARIO_CREATE]
         ];
     }
 
@@ -39,8 +39,8 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
     {
         if ($insert) {
             $this->generateToken();
-            $this->expires_in = time() + static::LIFETIME;
-            $this->created_at = time();
+            $this->expiresIn = time() + static::LIFETIME;
+            $this->createdAt = time();
         }
         return parent::beforeSave($insert);
     }
@@ -58,7 +58,7 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'id_user']);
+        return $this->hasOne(User::className(), ['id' => 'idUser']);
     }
     
     private function generateToken()
@@ -68,23 +68,23 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
 
     public function isOwner($userId)
     {
-        return $this->id_user == $userId;
+        return $this->idUser == $userId;
     }
     
     public function fields()
     {
         $ret = [
             'id' => 'id',
-            'user' => 'id_user',
+            'idUser' => 'idUser',
             'expiresIn' => function($model) {
-                return Yii::$app->formatter->format($model->expires_in, 'datetime');
+                return Yii::$app->formatter->format($model->expiresIn, 'datetime');
             },
             'createdAt' => function($model) {
-                return Yii::$app->formatter->format($model->created_at, 'datetime');
+                return Yii::$app->formatter->format($model->createdAt, 'datetime');
             },
         ];
         
-        if ($this->id_user == \Yii::$app->user->getId() || $this->scenario == static::SCENARIO_CREATE) {
+        if ($this->idUser == \Yii::$app->user->getId() || $this->scenario == static::SCENARIO_CREATE) {
             $ret['token'] = 'token';
         }
         

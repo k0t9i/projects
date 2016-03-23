@@ -8,10 +8,10 @@ use Yii;
  * This is the model class for table "{{%project_user}}".
  *
  * @property integer $id
- * @property integer $id_user
- * @property integer $id_project
- * @property integer $attached_at
- * @property boolean $is_active
+ * @property integer $idUser
+ * @property integer $idProject
+ * @property integer $attachedAt
+ * @property boolean $isActive
  */
 class ProjectUser extends \yii\db\ActiveRecord
 {

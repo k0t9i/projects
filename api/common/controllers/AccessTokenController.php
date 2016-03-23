@@ -87,7 +87,7 @@ class AccessTokenController extends ApiController
         }
 
         $params = \Yii::$app->request->bodyParams;
-        $params['id_user'] = $user->id;
+        $params['idUser'] = $user->id;
         \Yii::$app->request->bodyParams = $params;
     }
 

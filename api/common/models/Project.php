@@ -10,9 +10,9 @@ use Yii;
  * @property integer $id
  * @property string $name
  * @property string $description
- * @property integer $started_at
- * @property integer $ended_at
- * @property boolean $is_active
+ * @property integer $startedAt
+ * @property integer $endedAt
+ * @property boolean $isActive
  * 
  * @property-read ProjectUser[] $projectUsers
  * @property-read User[] $users
@@ -31,21 +31,21 @@ class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterfac
 
     public function getProjectUsers()
     {
-        return $this->hasMany(ProjectUser::className(), ['id_project' => 'id']);
+        return $this->hasMany(ProjectUser::className(), ['idProject' => 'id']);
     }
     
     public function getUsers()
     {
-        return $this->hasMany(User::className(), ['id' => 'id_user'])
+        return $this->hasMany(User::className(), ['id' => 'id_User'])
                 ->via('projectUsers');
     }
 
     public function isOwner($userId)
     {
         $ids = $this->getProjectUsers()
-                ->select('id_user')
-                ->where(['is_active' => true])
-                ->indexBy('id_user')
+                ->select('idUser')
+                ->where(['isActive' => true])
+                ->indexBy('idUser')
                 ->asArray()
                 ->all();
         return array_key_exists($userId, $ids);
@@ -61,12 +61,12 @@ class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterfac
             'name' => 'name',
             'description' => 'description',
             'startedAt' => function($model) {
-                return Yii::$app->formatter->format($model->started_at, 'datetime');
+                return Yii::$app->formatter->format($model->startedAt, 'datetime');
             },
             'ednedAt' => function($model) {
-                return Yii::$app->formatter->format($model->ended_at, 'datetime');
+                return Yii::$app->formatter->format($model->endedAt, 'datetime');
             },
-            'isActive' => 'is_active'
+            'isActive' => 'isActive'
         ];
     }
 

@@ -9,10 +9,9 @@ use Yii;
  *
  * @property integer $id
  * @property string $name
- * @property string $main_role
+ * @property string $mainRole
  *
  * @property User[] $users
- * @property \yii\rbac\Role|null $mainRole
  */
 class UserGroup extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterface
 {
@@ -30,8 +29,8 @@ class UserGroup extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterf
      */
     public function getUsers()
     {
-        return $this->hasMany(User::className(), ['id' => 'id_user'])
-                ->viaTable(User::JUNCTION_USER_GROUP, ['id_user_group' => 'id']);
+        return $this->hasMany(User::className(), ['id' => 'idUser'])
+                ->viaTable(User::JUNCTION_USER_GROUP, ['idUserGroup' => 'id']);
     }
 
     /**
@@ -39,12 +38,12 @@ class UserGroup extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterf
      */
     public function getMainRole()
     {
-        return Yii::$app->authManager->getRole($this->main_role);
+        return Yii::$app->authManager->getRole($this->mainRole);
     }
     
     public function getPermissions()
     {
-        $names = array_keys(Yii::$app->authManager->getPermissionsByRole($this->main_role));
+        $names = array_keys(Yii::$app->authManager->getPermissionsByRole($this->mainRole));
         
         return AuthItem::find()->permissions()->andWhere([
             'name' => $names
@@ -59,7 +58,7 @@ class UserGroup extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterf
         return [
             'id' => 'id',
             'name' => 'name',
-            'mainRole' => 'main_role'
+            'mainRole' => 'mainRole'
         ];
     }
 
