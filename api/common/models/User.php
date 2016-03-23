@@ -6,6 +6,7 @@ use Yii;
 use yii\web\IdentityInterface;
 use yii\base\NotSupportedException;
 use yii\helpers\ArrayHelper;
+use api\common\models\queries\UserQuery;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -18,6 +19,7 @@ use yii\helpers\ArrayHelper;
  * @property string $middlename
  * @property integer $idGender
  * @property string $email
+ * @property boolean $isActive
  *
  * @property-read DGender $gender
  * @property-read UserGroup[] $userGroups
@@ -46,6 +48,11 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
     public static function tableName()
     {
         return '{{%user}}';
+    }
+    
+    public static function find()
+    {
+        return new UserQuery(get_called_class());
     }
 
     public function rules()
@@ -162,6 +169,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
                 ])
                 ->where(['at.token' => $token])
                 ->andWhere('at."expiresIn" > :now', [':now' => time()])
+                ->active()
                 ->one();
         if ($ret) {
             $ret->_accessToken = $token;
@@ -196,9 +204,10 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
      */
     public static function findByLoginAndPassword($login, $password)
     {
-        $model = static::findOne([
+        $model = static::find()
+                ->where([
                     'login' => $login
-        ]);
+                ])->active()->one();
 
         $ret = null;
         if ($model) {
@@ -235,7 +244,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
                     $timestamp = $model->currentAccessToken->createdAt;
                 }
                 return Yii::$app->formatter->format($timestamp, 'datetime');
-            }
+            },
+            'isActive' => 'isActive'
         ];
     }
 
