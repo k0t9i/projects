@@ -25,6 +25,7 @@ class FilterQueryBuilder
     const L_OP_AND = 'and';
 
     private static $_validFields;
+    private static $_model;
     private static $_arrayOpMap = [
         self::OP_BETWEEN, self::OP_NOT_BETWEEN, self::OP_IN, self::OP_NOT_IN
     ];
@@ -42,11 +43,11 @@ class FilterQueryBuilder
         if (!$query) {
             $query = new Query();
         } elseif ($query instanceof ActiveQuery) {
-            $model = new $query->modelClass();
-            if (!($model instanceof Filterable)) {
+            static::$_model = new $query->modelClass();
+            if (!(static::$_model instanceof Filterable)) {
                 throw new \InvalidArgumentException("Model in ActiveQuery must implements Filterable");
             }
-            static::$_validFields = $model->filterFields();
+            static::$_validFields = static::$_model->getFilterFields();
             if (!is_array(static::$_validFields)) {
                 static::$_validFields = [];
             }
@@ -114,7 +115,15 @@ class FilterQueryBuilder
         if (!in_array($item[3], static::$_logicalOpMap)) {
             throw new \InvalidArgumentException(implode(', ', static::$_logicalOpMap));
         }
-
+        
+        if (is_array($item[1])) {
+            foreach ($item[1] as $k => $v) {
+                $item[1][$k] = static::typecast($item[0], $v);
+            }
+        } else {
+            $item[1] = static::typecast($item[0], $item[1]);
+        }
+        
         if (in_array($item[2], [static::OP_BETWEEN, static::OP_NOT_BETWEEN])) {
             if (!is_array($item[1]) || count($item[1]) < 2) {
                 throw new \InvalidArgumentException('Value for "' . $item[2] . '" operator must be an array 2 length');
@@ -125,6 +134,18 @@ class FilterQueryBuilder
         }
 
         return $condition;
+    }
+    
+    private static function typecast($field, $value)
+    {
+        if (static::$_model) {
+            $column = static::$_model->getTableSchema()->getColumn($field);
+            if ($value && $column) {
+                $value = $column->dbTypecast($value);
+            }
+        }
+        
+        return $value;
     }
 
 }
