@@ -7,6 +7,9 @@ use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\filters\auth\CompositeAuth;
 use yii\rest\Action;
+use api\components\Filterable;
+use api\components\FilterQueryBuilder;
+use yii\data\ActiveDataProvider;
 
 class ApiController extends ActiveController
 {
@@ -51,17 +54,20 @@ class ApiController extends ActiveController
     {    
         $modelClass = $query ? $query->modelClass : $this->modelClass;
         $model = new $modelClass();
-        if ($model instanceof \api\common\models\Filterable) {
-            $params = json_decode(\Yii::$app->request->get('filter'), true);
-            $model->scenario = $modelClass::SCENARIO_FILTER;
-            $model->load($params, '');
-            
-            $dp = $model->search($query);
-        } else {
-            $dp = new \yii\data\ActiveDataProvider([
-                'query' => $query ? $query : $model->find()
-            ]);
+        $query = $query ? $query : $model->find();
+        if ($model instanceof Filterable) {
+            $rawFilter = \Yii::$app->request->get('filter');
+            if ($rawFilter) {
+                $filters = json_decode($rawFilter, true);
+                if (is_null($filters)) {
+                    throw new \InvalidArgumentException("Invalid json in filters");
+                }
+                $query = FilterQueryBuilder::build($filters, $query);
+            }
         }
+        $dp = new ActiveDataProvider([
+            'query' => $query
+        ]);
         return $dp;
     }
 }
