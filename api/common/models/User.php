@@ -7,6 +7,7 @@ use yii\web\IdentityInterface;
 use yii\base\NotSupportedException;
 use yii\helpers\ArrayHelper;
 use api\common\models\queries\UserQuery;
+use api\components\Filterable;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -313,23 +314,13 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
             'login', 'lastname', 'firstname', 'middlename', 'email'
         ];
     }
-    
-    protected function prepareFilterQuery(\yii\db\ActiveQuery $query) {
-        if ($this->login) {
-            $query->andWhere(['like', 'login', $this->login]);
-        }
-        if ($this->lastname) {
-            $query->andWhere(['like', 'lastname', $this->lastname]);
-        }
-        if ($this->firstname) {
-            $query->andWhere(['like', 'firstname', $this->firstname]);
-        }
-        if ($this->middlename) {
-            $query->andWhere(['like', 'middlename', $this->middlename]);
-        }
-        if ($this->email) {
-            $query->andWhere(['like', 'email', $this->email]);
-        }
+
+    public function getFilterFields()
+    {
+        return [
+            'login', 'lastname', 'firstname', 'middlename', 'email', 'idGender',
+            'isActive'
+        ];
     }
 
 }

@@ -3,6 +3,7 @@
 namespace api\common\models;
 
 use Yii;
+use api\components\Filterable;
 
 /**
  * This is the model class for table "{{%project}}".
@@ -70,10 +71,10 @@ class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterfac
         ];
     }
 
-    protected function filterField()
+    public function getFilterFields()
     {
         return [
-            'name'
+            'name', 'description', 'startedAt', 'endedAt', 'isActive'
         ];
     }
 

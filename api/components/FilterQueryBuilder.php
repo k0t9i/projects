@@ -2,7 +2,9 @@
 
 namespace api\components;
 
-use \yii\db\Query;
+use yii\db\Query;
+use yii\db\ActiveQuery;
+use api\components\Filterable;
 
 class FilterQueryBuilder
 {
@@ -39,10 +41,10 @@ class FilterQueryBuilder
     {
         if (!$query) {
             $query = new Query();
-        } elseif ($query instanceof \yii\db\ActiveQuery) {
+        } elseif ($query instanceof ActiveQuery) {
             $model = new $query->modelClass();
-            if (!($model instanceof \api\common\models\Filterable)) {
-                throw new \InvalidArgumentException();
+            if (!($model instanceof Filterable)) {
+                throw new \InvalidArgumentException("Model in ActiveQuery must implements Filterable");
             }
             static::$_validFields = $model->filterFields();
             if (!is_array(static::$_validFields)) {

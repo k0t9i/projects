@@ -6,6 +6,7 @@ use Yii;
 use yii\rbac\Role;
 use api\common\models\queries\AuthItemQuery;
 use yii\db\ActiveRecord;
+use api\components\Filterable;
 
 /**
  * This is the model class for table "{{%auth_item}}".
@@ -60,24 +61,11 @@ class AuthItem extends ActiveRecord implements Filterable
     /**
      * @inheritdoc
      */
-    protected function filterField()
+    public function getFilterFields()
     {
         return [
             'name', 'type', 'description'
         ];
-    }
-    
-    protected function prepareFilterQuery(\yii\db\ActiveQuery $query)
-    {
-        if ($this->name) {
-            $query->andWhere(['like', 'name', $this->name]);
-        }
-        if ($this->type) {
-            $query->andWhere(['type' => $this->type]);
-        }
-        if ($this->description) {
-            $query->andWhere(['like', 'description', $this->description]);
-        }
     }
 
 }
