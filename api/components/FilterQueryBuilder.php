@@ -44,11 +44,8 @@ class FilterQueryBuilder
         if (!(static::$_model instanceof Filterable)) {
             throw new \InvalidArgumentException("Model in ActiveQuery must implements Filterable");
         }
-        static::$_validFields = static::$_model->getFilterFields();
-        if (!is_array(static::$_validFields)) {
-            static::$_validFields = [];
-        }
-        static::$_validFields = array_intersect(static::$_model->attributes(), static::$_validFields);
+        static::$_validFields = array_intersect(static::$_model->attributes(), static::$_model->getFilterFields());
+        
         static::parse($filters, $query);
         return $query;
     }
@@ -98,12 +95,8 @@ class FilterQueryBuilder
             $item[3] = static::L_OP_AND;
         }
 
-        foreach ($item as $k => $v) {
-            if ($k == 1) {
-                continue;
-            }
-            $item[$k] = strtolower($v);
-        }
+        $item[2] = strtolower($item[2]);
+        $item[3] = strtolower($item[3]);
 
         $operands = is_array($item[1]) ? static::$_arrayOpMap : static::$_simpleOpMap;
         if (!in_array($item[2], $operands)) {
@@ -120,7 +113,7 @@ class FilterQueryBuilder
         } else {
             $item[1] = static::typecast($item[0], $item[1]);
         }
-
+        
         if (in_array($item[2], [static::OP_BETWEEN, static::OP_NOT_BETWEEN])) {
             if (!is_array($item[1]) || count($item[1]) < 2) {
                 throw new \InvalidArgumentException('Value for "' . $item[2] . '" operator must be an array 2 length');
