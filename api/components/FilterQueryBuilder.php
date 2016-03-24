@@ -42,9 +42,17 @@ class FilterQueryBuilder
     {
         static::$_model = new $query->modelClass();
         if (!(static::$_model instanceof Filterable)) {
-            throw new \InvalidArgumentException("Model in ActiveQuery must implements Filterable");
+            throw new \InvalidArgumentException('Model in ActiveQuery must implements Filterable');
         }
-        static::$_validFields = array_intersect(static::$_model->attributes(), static::$_model->getFilterFields());
+        static::$_validFields = static::$_model->getFilterFields();
+        if (!is_array(static::$_validFields)) {
+            throw new \LogicException(static::$_model->className() . '::getFilterFields must return an array');
+        }
+        
+        $extraFields = array_diff(static::$_validFields, static::$_model->attributes());
+        if ($extraFields) {
+            throw new \LogicException(static::$_model->className() . '::getFilterFields return extra fields: ' . implode(', ', $extraFields));
+        }
         
         static::parse($filters, $query);
         return $query;
