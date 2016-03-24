@@ -51,6 +51,7 @@ class FilterQueryBuilder
             if (!is_array(static::$_validFields)) {
                 static::$_validFields = [];
             }
+            static::$_validFields = array_intersect(static::$_model->attributes(), static::$_validFields);
         }
         static::parse($filters, $query);
         return $query;
