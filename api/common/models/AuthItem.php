@@ -22,8 +22,6 @@ use api\components\Filterable;
 class AuthItem extends ActiveRecord implements Filterable
 {
 
-    use ActiveRecordFilterTrait;
-
     const TYPE_ROLE = Role::TYPE_ROLE;
     const TYPE_PERMISSION = Role::TYPE_PERMISSION;
 

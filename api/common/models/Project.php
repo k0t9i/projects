@@ -20,7 +20,6 @@ use api\components\Filterable;
  */
 class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterface, Filterable
 {
-    use ActiveRecordFilterTrait;
     
     /**
      * @inheritdoc
@@ -74,7 +73,7 @@ class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterfac
     public function getFilterFields()
     {
         return [
-            'name', 'description', 'startedAt', 'endedAt', 'isActive'
+            'name', 'description', 'startedAt', 'endedAt', 'isActive', 'id'
         ];
     }
 

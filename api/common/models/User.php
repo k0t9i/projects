@@ -32,7 +32,6 @@ use api\components\Filterable;
  */
 class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
 {
-    use ActiveRecordFilterTrait;
     
     const SCENARIO_CREATE = 'scenario-create';
     const JUNCTION_USER_GROUP = '{{%j_user_user_group}}';
