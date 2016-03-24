@@ -3,6 +3,7 @@
 namespace api\common\models;
 
 use Yii;
+use api\components\Filterable;
 
 /**
  * This is the model class for table "{{%user_group}}".
@@ -13,7 +14,7 @@ use Yii;
  *
  * @property User[] $users
  */
-class UserGroup extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterface
+class UserGroup extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterface, Filterable
 {
 
     /**
@@ -67,6 +68,11 @@ class UserGroup extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterf
         return $this->getUsers()->andWhere([
             User::tableName() . '.id' => (int) $userId
         ])->exists();
+    }
+
+    public function getFilterFields()
+    {
+        return ['name', 'mainRole'];
     }
 
 }

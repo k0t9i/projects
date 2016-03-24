@@ -73,7 +73,7 @@ class Project extends \yii\db\ActiveRecord implements \api\rbac\HasOwnerInterfac
     public function getFilterFields()
     {
         return [
-            'name', 'description', 'startedAt', 'endedAt', 'isActive', 'id'
+            'name', 'description', 'startedAt', 'endedAt', 'isActive'
         ];
     }
 

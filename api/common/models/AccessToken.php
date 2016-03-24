@@ -5,6 +5,7 @@ namespace api\common\models;
 use Yii;
 use api\common\models\User;
 use api\rbac\HasOwnerInterface;
+use api\components\Filterable;
 
 /**
  * This is the model class for table "{{%access_token}}".
@@ -17,7 +18,7 @@ use api\rbac\HasOwnerInterface;
  *
  * @property User $user
  */
-class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
+class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface, Filterable
 {
     const LIFETIME = 24 * 3600;
     const SCENARIO_CREATE = 'scenario-create';
@@ -89,6 +90,11 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface
         }
         
         return $ret;
+    }
+
+    public function getFilterFields()
+    {
+        return ['idUser', 'expiresIn', 'createdAt'];
     }
 
 }
