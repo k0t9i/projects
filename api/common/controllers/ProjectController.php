@@ -15,7 +15,7 @@ class ProjectController extends ApiController
 
         $behaviors['access'] = [
             'class' => AccessControl::className(),
-            'except' => ['options', 'users'],
+            'except' => ['options'],
             'rules' => [
                 [
                     'allow' => true,
@@ -45,7 +45,14 @@ class ProjectController extends ApiController
                     'allow' => true,
                     'actions' => ['create'],
                     'roles' => ['project.create']
-                ]
+                ],
+                [
+                    'allow' => true,
+                    'actions' => ['users'],
+                    'matchCallback' => function() {
+                        return \Yii::$app->user->can('project.users', ['model' => $this->findModel()]);
+                    }
+                ],
             ]
         ];
 

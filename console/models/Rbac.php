@@ -60,6 +60,7 @@ class Rbac extends Model
         $auth->addChild($performer, $tokenRoles['deleteOwn']);
         $auth->addChild($performer, $tokenRoles['viewOwn']);
         $auth->addChild($performer, $projectRoles['viewOwn']);
+        $auth->addChild($performer, $projectRoles['ownUsers']);
         $auth->addChild($performer, $userGroupRoles['ownPermissions']);
         
         $auth->addChild($manager, $tokenRoles['deleteOwn']);
@@ -67,6 +68,7 @@ class Rbac extends Model
         $auth->addChild($manager, $projectRoles['create']);
         $auth->addChild($manager, $projectRoles['viewOwn']);
         $auth->addChild($manager, $projectRoles['updateOwn']);
+        $auth->addChild($manager, $projectRoles['ownUsers']);
         $auth->addChild($manager, $userGroupRoles['ownPermissions']);
         
         $auth->addChild($chief, $tokenRoles['deleteOwn']);
@@ -79,6 +81,7 @@ class Rbac extends Model
         $auth->addChild($chief, $projectRoles['viewAll']);
         $auth->addChild($chief, $projectRoles['create']);
         $auth->addChild($chief, $projectRoles['update']);
+        $auth->addChild($chief, $projectRoles['users']);
         $auth->addChild($chief, $userGroupRoles['users']);
         $auth->addChild($chief, $userGroupRoles['permissions']);
         
@@ -96,6 +99,7 @@ class Rbac extends Model
         $auth->addChild($admin, $projectRoles['create']);
         $auth->addChild($admin, $projectRoles['update']);
         $auth->addChild($admin, $projectRoles['delete']);
+        $auth->addChild($admin, $projectRoles['users']);
         $auth->addChild($admin, $userGroupRoles['users']);
         $auth->addChild($admin, $userGroupRoles['permissions']);
     }
@@ -197,6 +201,16 @@ class Rbac extends Model
         $ret['delete'] = $manager->createPermission($key . '.delete');
         $ret['delete']->description = 'Delete project';
         $manager->add($ret['delete']);
+        
+        $ret['users'] = $manager->createPermission($key . '.users');
+        $ret['users']->description = 'View project users list';
+        $manager->add($ret['users']);
+        
+        $ret['ownUsers'] = $manager->createPermission($key . '.ownUsers');
+        $ret['ownUsers']->description = 'View own project users list';
+        $ret['ownUsers']->ruleName = $rules['ownerRule']->name;
+        $manager->add($ret['ownUsers']);
+        $manager->addChild($ret['ownUsers'], $ret['users']);
         
         return $ret;        
     }
