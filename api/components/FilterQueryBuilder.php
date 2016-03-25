@@ -5,6 +5,7 @@ namespace api\components;
 use yii\db\Query;
 use yii\db\ActiveQuery;
 use api\components\Filterable;
+use yii\db\Schema;
 
 class FilterQueryBuilder
 {
@@ -122,15 +123,26 @@ class FilterQueryBuilder
             $item[1] = static::typecast($item[0], $item[1]);
         }
         
-        if (in_array($item[2], [static::OP_BETWEEN, static::OP_NOT_BETWEEN])) {
-            if (!is_array($item[1]) || count($item[1]) < 2) {
-                throw new \InvalidArgumentException('Value for "' . $item[2] . '" operator must be an array 2 length');
-            }
-            $condition = [$item[2], $item[0], $item[1][0], $item[1][1], $item[3]];
-        } else {
-            $condition = [$item[2], $item[0], $item[1], $item[3]];
+        switch ($item[2]) {
+            case static::OP_BETWEEN:
+            case static::OP_NOT_BETWEEN:
+                if (!is_array($item[1]) || count($item[1]) < 2) {
+                    throw new \InvalidArgumentException('Value for "' . $item[2] . '" operator must be an array 2 length');
+                }
+                $condition = [$item[2], $item[0], $item[1][0], $item[1][1], $item[3]];
+                break;
+            case static::OP_LIKE:
+            case static::OP_NOT_LIKE:
+                $types = static::getTextOrStringDbTypes();
+                $column = static::$_model->getTableSchema()->getColumn($item[0]);
+                if (!array_key_exists($column->dbType, $types)) {
+                    throw new \InvalidArgumentException('Operators LIKE and NOT LIKE can be uses only for string or text types');
+                }
+                //break skipped by design
+            default:
+                $condition = [$item[2], $item[0], $item[1], $item[3]];
         }
-
+        
         return $condition;
     }
 
@@ -142,6 +154,20 @@ class FilterQueryBuilder
         }
 
         return $value;
+    }
+    
+    private static function getTextOrStringDbTypes()
+    {
+        $types = static::$_model->getDb()->getSchema()->typeMap;
+        $ret = [];
+        
+        foreach ($types as $dbType => $type) {
+            if (in_array($type, [Schema::TYPE_STRING, Schema::TYPE_TEXT])) {
+                $ret[$dbType] = $dbType;
+            }
+        }
+        
+        return $ret;
     }
 
 }
