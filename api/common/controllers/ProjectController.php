@@ -63,9 +63,7 @@ class ProjectController extends ApiController
     
     public function actionUsers()
     {
-        return new ActiveDataProvider([
-            'query' => $this->findModel()->getUsers()
-        ]);
+        return $this->prepareDataProvider($this->findModel()->getUsers());
     }
 
 }
