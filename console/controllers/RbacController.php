@@ -16,7 +16,7 @@ class RbacController extends Controller
         (new Rbac(['db' => $this->db]))->initRoles();
     }
     
-    public function options()
+    public function options($actionID)
     {
         return [
             'db'
