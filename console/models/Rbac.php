@@ -59,12 +59,16 @@ class Rbac extends Model
         
         $auth->addChild($performer, $tokenRoles['deleteOwn']);
         $auth->addChild($performer, $tokenRoles['viewOwn']);
+        $auth->addChild($performer, $userRoles['viewOwn']);
+        $auth->addChild($performer, $userRoles['updateOwn']);
         $auth->addChild($performer, $projectRoles['viewOwn']);
         $auth->addChild($performer, $projectRoles['ownUsers']);
         $auth->addChild($performer, $userGroupRoles['ownPermissions']);
         
         $auth->addChild($manager, $tokenRoles['deleteOwn']);
         $auth->addChild($manager, $tokenRoles['viewOwn']);
+        $auth->addChild($manager, $userRoles['viewOwn']);
+        $auth->addChild($manager, $userRoles['updateOwn']);
         $auth->addChild($manager, $projectRoles['create']);
         $auth->addChild($manager, $projectRoles['viewOwn']);
         $auth->addChild($manager, $projectRoles['updateOwn']);
@@ -155,9 +159,21 @@ class Rbac extends Model
         $ret['view']->description = 'View user';
         $manager->add($ret['view']);
         
+        $ret['viewOwn'] = $manager->createPermission($key . '.viewOwn');
+        $ret['viewOwn']->description = 'View own user';
+        $ret['viewOwn']->ruleName = $rules['ownerRule']->name;
+        $manager->add($ret['viewOwn']);
+        $manager->addChild($ret['viewOwn'], $ret['view']);
+        
         $ret['update'] = $manager->createPermission($key . '.update');
         $ret['update']->description = 'Update user';
         $manager->add($ret['update']);
+        
+        $ret['updateOwn'] = $manager->createPermission($key . '.updateOwn');
+        $ret['updateOwn']->description = 'Update own user';
+        $ret['updateOwn']->ruleName = $rules['ownerRule']->name;
+        $manager->add($ret['updateOwn']);
+        $manager->addChild($ret['updateOwn'], $ret['update']);
         
         $ret['delete'] = $manager->createPermission($key . '.delete');
         $ret['delete']->description = 'Delete user';

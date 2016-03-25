@@ -24,8 +24,10 @@ class UserController extends ApiController
                 ],
                 [
                     'allow' => true,
-                    'actions' => ['view'],
-                    'roles' => ['user.view']
+                    'actions' => ['view', 'self'],
+                    'matchCallback' => function() {
+                        return \Yii::$app->user->can('user.view', ['model' => $this->findModel()]);
+                    }
                 ],
                 [
                     'allow' => true,
@@ -35,7 +37,9 @@ class UserController extends ApiController
                 [
                     'allow' => true,
                     'actions' => ['update'],
-                    'roles' => ['user.update']
+                    'matchCallback' => function() {
+                        return \Yii::$app->user->can('user.update', ['model' => $this->findModel()]);
+                    }
                 ],
                 [
                     'allow' => true,
