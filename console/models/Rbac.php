@@ -63,6 +63,7 @@ class Rbac extends Model
         $auth->addChild($performer, $userRoles['updateOwn']);
         $auth->addChild($performer, $userRoles['ownProjects']);
         $auth->addChild($performer, $userRoles['ownUserGroups']);
+        $auth->addChild($performer, $userRoles['ownPermissions']);
         $auth->addChild($performer, $projectRoles['viewOwn']);
         $auth->addChild($performer, $projectRoles['ownUsers']);
         $auth->addChild($performer, $userGroupRoles['ownPermissions']);
@@ -73,6 +74,7 @@ class Rbac extends Model
         $auth->addChild($manager, $userRoles['updateOwn']);
         $auth->addChild($manager, $userRoles['ownProjects']);
         $auth->addChild($manager, $userRoles['ownUserGroups']);
+        $auth->addChild($manager, $userRoles['ownPermissions']);
         $auth->addChild($manager, $projectRoles['create']);
         $auth->addChild($manager, $projectRoles['viewOwn']);
         $auth->addChild($manager, $projectRoles['updateOwn']);
@@ -87,6 +89,7 @@ class Rbac extends Model
         $auth->addChild($chief, $userRoles['update']);
         $auth->addChild($chief, $userRoles['projects']);
         $auth->addChild($chief, $userRoles['userGroups']);
+        $auth->addChild($chief, $userRoles['permissions']);
         $auth->addChild($chief, $projectRoles['view']);
         $auth->addChild($chief, $projectRoles['viewAll']);
         $auth->addChild($chief, $projectRoles['create']);
@@ -106,6 +109,7 @@ class Rbac extends Model
         $auth->addChild($admin, $userRoles['delete']);
         $auth->addChild($admin, $userRoles['projects']);
         $auth->addChild($admin, $userRoles['userGroups']);
+        $auth->addChild($admin, $userRoles['permissions']);
         $auth->addChild($admin, $projectRoles['view']);
         $auth->addChild($admin, $projectRoles['viewAll']);
         $auth->addChild($admin, $projectRoles['create']);
@@ -206,6 +210,16 @@ class Rbac extends Model
         $ret['ownUserGroups']->ruleName = $rules['ownerRule']->name;
         $manager->add($ret['ownUserGroups']);
         $manager->addChild($ret['ownUserGroups'], $ret['userGroups']);
+        
+        $ret['permissions'] = $manager->createPermission($key . '.permissions');
+        $ret['permissions']->description = 'View user permissions';
+        $manager->add($ret['permissions']);
+         
+        $ret['ownPermissions'] = $manager->createPermission($key . '.ownPermissions');
+        $ret['ownPermissions']->description = 'View own user permissions';
+        $ret['ownPermissions']->ruleName = $rules['ownerRule']->name;
+        $manager->add($ret['ownPermissions']);
+        $manager->addChild($ret['ownPermissions'], $ret['permissions']);
         
         return $ret;        
     }

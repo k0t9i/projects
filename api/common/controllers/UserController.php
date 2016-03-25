@@ -60,6 +60,13 @@ class UserController extends ApiController
                         return \Yii::$app->user->can('user.userGroups', ['model' => $this->findModel()]);
                     }
                 ],
+                [
+                    'allow' => true,
+                    'actions' => ['permissions'],
+                    'matchCallback' => function() {
+                        return \Yii::$app->user->can('user.permissions', ['model' => $this->findModel()]);
+                    }
+                ]
             ]
         ];
 
@@ -99,6 +106,11 @@ class UserController extends ApiController
     public function actionUserGroups()
     {
         return $this->prepareDataProvider($this->findModel()->getUserGroups());
+    }
+    
+    public function actionPermissions()
+    {
+        return $this->prepareDataProvider($this->findModel()->getPermissions());
     }
 
 }

@@ -307,6 +307,15 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
         return $this->hasMany(Project::className(), ['id' => 'idProject'])
                 ->via('projectUsers');
     }
+    
+    public function getPermissions()
+    {
+        $names = array_keys(Yii::$app->authManager->getPermissionsByUser($this->id));
+        
+        return AuthItem::find()->permissions()->andWhere([
+            'name' => $names
+        ]);
+    }
 
     protected function filterField()
     {
