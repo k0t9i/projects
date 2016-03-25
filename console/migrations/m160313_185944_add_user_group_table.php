@@ -14,9 +14,7 @@ class m160313_185944_add_user_group_table extends Migration
         ]);
         
         $this->createIndex('idx-user_group-main_role', '{{%user_group}}', 'main_role');
-        if (!$this->db->driverName == 'sqlite') {
-            $this->addForeignKey('fk-user_group-auth_item', '{{%user_group}}', 'main_role', 'auth_item', 'name');
-        }
+        $this->addForeignKey('fk-user_group-auth_item', '{{%user_group}}', 'main_role', 'auth_item', 'name');
         
         
         $this->createTable('{{%j_user_user_group}}', [
@@ -28,10 +26,8 @@ class m160313_185944_add_user_group_table extends Migration
         $this->createIndex('idx-j_user_user_group-id_user', '{{%j_user_user_group}}', 'id_user');
         $this->createIndex('idx-j_user_user_group-id_user_group', '{{%j_user_user_group}}', 'id_user_group');
 
-        if (!$this->db->driverName == 'sqlite') {
-            $this->addForeignKey('fk-j_user_user_group-id_user', '{{%j_user_user_group}}', 'id_user', '{{%user}}', 'id', 'CASCADE');
-            $this->addForeignKey('fk-j_user_user_group-id_user_group', '{{%j_user_user_group}}', 'id_user_group', '{{%user_group}}', 'id', 'CASCADE');
-        }
+        $this->addForeignKey('fk-j_user_user_group-id_user', '{{%j_user_user_group}}', 'id_user', '{{%user}}', 'id', 'CASCADE');
+        $this->addForeignKey('fk-j_user_user_group-id_user_group', '{{%j_user_user_group}}', 'id_user_group', '{{%user_group}}', 'id', 'CASCADE');
     }
 
     public function safeDown()
