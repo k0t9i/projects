@@ -13,6 +13,7 @@ use yii\data\ActiveDataProvider;
 
 class ApiController extends ActiveController
 {
+    public $filterParam = 'filter';
     private $_action;
 
     public function behaviors()
@@ -56,7 +57,7 @@ class ApiController extends ActiveController
         $model = new $modelClass();
         $query = $query ? $query : $model->find();
         if ($model instanceof Filterable) {
-            $rawFilter = \Yii::$app->request->get('filter');
+            $rawFilter = \Yii::$app->request->get($this->filterParam);
             if ($rawFilter) {
                 $filters = json_decode($rawFilter, true);
                 if (is_null($filters)) {
