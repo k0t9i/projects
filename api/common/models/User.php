@@ -8,6 +8,7 @@ use yii\base\NotSupportedException;
 use yii\helpers\ArrayHelper;
 use api\common\models\queries\UserQuery;
 use api\components\Filterable;
+use api\rbac\HasOwnerInterface;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -30,7 +31,7 @@ use api\components\Filterable;
  * @property-read ProjectUser[] $projectUsers
  * @property-read Project[] $projects
  */
-class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
+class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable, HasOwnerInterface
 {
     
     const SCENARIO_CREATE = 'scenario-create';
@@ -320,6 +321,11 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
             'login', 'lastname', 'firstname', 'middlename', 'email', 'idGender',
             'isActive'
         ];
+    }
+
+    public function isOwner($userId)
+    {
+        return $this->id == $userId;
     }
 
 }
