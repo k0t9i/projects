@@ -2,46 +2,53 @@
 
 namespace api\common\controllers;
 
+use Yii;
 use yii\web\ForbiddenHttpException;
 use yii\filters\AccessControl;
 
+/**
+ * Controller for AccessToken model
+ */
 class AccessTokenController extends ApiController
 {
 
     public $modelClass = 'api\common\models\AccessToken';
 
+    /**
+     * @inheritdoc
+     */
     public function behaviors()
     {
         $behaviors = parent::behaviors();
 
-        $behaviors['authenticator']['except'] = ['create'];
+        $behaviors['authenticator']['except'] = ['create']; // Not uses authentification for create action
         $behaviors['access'] = [
-            'class' => AccessControl::className(),
+            'class'  => AccessControl::className(),
             'except' => ['create', 'options'],
-            'rules' => [
+            'rules'  => [
                 [
-                    'allow' => true,
+                    'allow'   => true,
                     'actions' => ['index'],
-                    'roles' => ['access-token.viewAll']
+                    'roles'   => ['access-token.viewAll']
                 ],
                 [
-                    'allow' => true,
-                    'actions' => ['view'],
+                    'allow'         => true,
+                    'actions'       => ['view'],
                     'matchCallback' => function() {
                         return \Yii::$app->user->can('access-token.view', ['model' => $this->findModel()]);
                     }
                 ],
                 [
-                    'allow' => true,
+                    'allow'   => true,
                     'actions' => ['delete-all'],
-                    'roles' => ['access-token.deleteAll']
+                    'roles'   => ['access-token.deleteAll']
                 ],
                 [
-                    'allow' => true,
-                    'actions' => ['delete'],
+                    'allow'         => true,
+                    'actions'       => ['delete'],
                     'matchCallback' => function() {
                         return \Yii::$app->user->can('access-token.delete', ['model' => $this->findModel()]);
-                    }
+                    }   
                 ]
             ]
         ];
@@ -49,6 +56,9 @@ class AccessTokenController extends ApiController
         return $behaviors;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function verbs()
     {
         $verbs = parent::verbs();
@@ -58,6 +68,9 @@ class AccessTokenController extends ApiController
         return $verbs;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function actions()
     {
         $actions = parent::actions();
@@ -72,25 +85,34 @@ class AccessTokenController extends ApiController
     }
 
     /**
+     * Check access for create action
+     * Find user by login and password
+     * Throw excetion if not found
+     * 
      * @throws ForbiddenHttpException
      */
     public function checkAccessForCreate()
     {
-        $login = \Yii::$app->request->post('login');
-        $password = \Yii::$app->request->post('password');
+        $login = Yii::$app->request->post('login');
+        $password = Yii::$app->request->post('password');
 
-        $userClass = \Yii::$app->user->identityClass;
+        $userClass = Yii::$app->user->identityClass;
         $user = $userClass::findByLoginAndPassword($login, $password);
 
         if (!$user) {
             throw new ForbiddenHttpException();
         }
 
-        $params = \Yii::$app->request->bodyParams;
+        $params = Yii::$app->request->bodyParams;
         $params['idUser'] = $user->id;
-        \Yii::$app->request->bodyParams = $params;
+        Yii::$app->request->bodyParams = $params;
     }
 
+    /**
+     * Remove all tokens except current token of logged user
+     * 
+     * @return array
+     */
     public function actionDeleteAll()
     {
         $modelClass = $this->modelClass;

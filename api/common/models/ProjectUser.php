@@ -2,7 +2,7 @@
 
 namespace api\common\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%project_user}}".
@@ -13,8 +13,9 @@ use Yii;
  * @property integer $attachedAt
  * @property boolean $isActive
  */
-class ProjectUser extends \yii\db\ActiveRecord
+class ProjectUser extends ActiveRecord
 {
+
     /**
      * @inheritdoc
      */
@@ -22,5 +23,5 @@ class ProjectUser extends \yii\db\ActiveRecord
     {
         return '{{%project_user}}';
     }
-    
+
 }

@@ -25,6 +25,9 @@ class AuthItem extends ActiveRecord implements Filterable
     const TYPE_ROLE = Role::TYPE_ROLE;
     const TYPE_PERMISSION = Role::TYPE_PERMISSION;
 
+    /**
+     * @inheritdoc
+     */
     public static function find()
     {
         return new AuthItemQuery(get_called_class());
@@ -44,10 +47,10 @@ class AuthItem extends ActiveRecord implements Filterable
     public function fields()
     {
         return [
-            'name' => 'name',
-            'type' => 'type',
+            'name'        => 'name',
+            'type'        => 'type',
             'description' => 'description',
-            'createdAt' => function($model) {
+            'createdAt'   => function($model) {
                 return Yii::$app->formatter->format($model->created_at, 'datetime');
             },
             'updatedAt' => function($model) {

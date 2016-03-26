@@ -9,6 +9,7 @@ use yii\helpers\ArrayHelper;
 use api\common\models\queries\UserQuery;
 use api\components\Filterable;
 use api\rbac\HasOwnerInterface;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -23,24 +24,51 @@ use api\rbac\HasOwnerInterface;
  * @property string $email
  * @property boolean $isActive
  *
- * @property-read DGender $gender
- * @property-read UserGroup[] $userGroups
- * @property-read AccessToken[] $accessTokens
- * @property-read AccessToken $currentAccessToken
- * @property array $groups
- * @property-read ProjectUser[] $projectUsers
- * @property-read Project[] $projects
+ * @property-read DGender|null $gender Gender relation
+ * @property-read UserGroup[] $userGroups UserGroup relation
+ * @property-read AccessToken[] $accessTokens AccessToken relation
+ * @property-read AccessToken|null $currentAccessToken Token under which user is logged
+ * @property array|null $groups Id groups from create action
+ * @property-read ProjectUser[] $projectUsers ProjectUser relation
+ * @property-read Project[] $projects Project relation
  */
-class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable, HasOwnerInterface
+class User extends ActiveRecord implements IdentityInterface, Filterable, HasOwnerInterface
 {
-    
+
     const SCENARIO_CREATE = 'scenario-create';
     const JUNCTION_USER_GROUP = '{{%j_user_user_group}}';
 
+    /**
+     * Password from create/update action
+     * 
+     * @var string 
+     */
     public $password;
+
+    /**
+     * Password repeat from create/update action
+     * 
+     * @var string 
+     */
     public $passwordRepeat;
+
+    /**
+     * @see getCurrentAccessToken
+     * 
+     * @var AccessToken|string|null 
+     */
     private $_accessToken;
+
+    /**
+     * @var array|null
+     */
     private $_groups;
+
+    /**
+     * Array of old group ids
+     * 
+     * @var array
+     */
     private $_oldGroups = [];
 
     /**
@@ -50,12 +78,18 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
     {
         return '{{%user}}';
     }
-    
+
+    /**
+     * @inheritdoc
+     */
     public static function find()
     {
         return new UserQuery(get_called_class());
     }
 
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [
@@ -74,6 +108,9 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function beforeSave($insert)
     {
         if ($this->password) {
@@ -81,10 +118,16 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
         }
         return parent::beforeSave($insert);
     }
-    
+
+    /**
+     * @inheritdoc
+     */
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
+        /**
+         * Update user groups from create/update actions
+         */
         $insertIds = array_diff($this->groups, $this->_oldGroups);
         if ($insertIds) {
             $rows = [];
@@ -94,7 +137,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
             static::getDb()
                     ->createCommand()
                     ->batchInsert(static::JUNCTION_USER_GROUP, ['idUser', 'idUserGroup'], $rows)
-                    ->execute();            
+                    ->execute();
         }
         $deleteIds = array_diff($this->_oldGroups, $this->groups);
         if ($deleteIds) {
@@ -102,11 +145,11 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
                     ->createCommand()
                     ->delete(static::JUNCTION_USER_GROUP, [
                         'idUserGroup' => $deleteIds,
-                        'idUser' => $this->id
+                        'idUser'      => $this->id
                     ])
                     ->execute();
         }
-        
+
         if ($insertIds || $deleteIds) {
             /**
              * @todo Remove roles only for deleted groups
@@ -118,7 +161,10 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
             }
         }
     }
-    
+
+    /**
+     * @inheritdoc
+     */
     public function afterFind()
     {
         parent::afterFind();
@@ -126,6 +172,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
     }
 
     /**
+     * Gender relation
+     * 
      * @return \yii\db\ActiveQuery
      */
     public function getGender()
@@ -134,6 +182,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
     }
 
     /**
+     * AccessToken relation
+     * 
      * @return \yii\db\ActiveQuery
      */
     public function getAccessTokens()
@@ -162,6 +212,9 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
+        /**
+         * Find only not expired token
+         */
         $ret = static::find()
                 ->joinWith([
                     'accessTokens' => function($query) {
@@ -197,7 +250,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
 
     /**
      * Find User model by login and validate it password
-     * Return null if user not found or password invalid
+     * Return null if user not found or password is invalid
      * 
      * @param string $login
      * @param string $password
@@ -206,18 +259,18 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
     public static function findByLoginAndPassword($login, $password)
     {
         $model = static::find()
-                ->where([
-                    'login' => $login
-                ])->active()->one();
+                        ->where([
+                            'login' => $login
+                        ])->active()->one();
 
         $ret = null;
         if ($model) {
             try {
-                if (Yii::$app->security->validatePassword($password, $model->passwordHash)){
+                if (Yii::$app->security->validatePassword($password, $model->passwordHash)) {
                     $ret = $model;
                 }
             } catch (\yii\base\InvalidParamException $ex) {
-
+                // if $model->passwordHash is not crypted
             }
         }
 
@@ -230,15 +283,15 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
     public function fields()
     {
         return [
-            'id' => 'id',
-            'login' => 'login',
-            'lastname' => 'lastname',
-            'firstname' => 'firstname',
+            'id'         => 'id',
+            'login'      => 'login',
+            'lastname'   => 'lastname',
+            'firstname'  => 'firstname',
             'middlename' => 'middlename',
-            'gender' => function($model) {
+            'gender'     => function($model) {
                 return $model->gender ? $model->gender->localizedName : null;
             },
-            'email' => 'email',
+            'email'     => 'email',
             'lastLogin' => function($model) {
                 $timestamp = null;
                 if ($model->currentAccessToken) {
@@ -250,6 +303,9 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function extraFields()
     {
         return [
@@ -258,6 +314,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
     }
 
     /**
+     * UserGroup relation
+     * 
      * @return \yii\db\ActiveQuery
      */
     public function getUserGroups()
@@ -265,6 +323,12 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
         return $this->hasMany(UserGroup::className(), ['id' => 'idUserGroup'])->viaTable(static::JUNCTION_USER_GROUP, ['idUser' => 'id']);
     }
 
+    /**
+     * Get AccessToken model by token from db or find last AccessToken
+     * Return null if AccessToken not found
+     * 
+     * @return AccessToken|null
+     */
     public function getCurrentAccessToken()
     {
         if (!($this->_accessToken instanceof AccessToken)) {
@@ -280,7 +344,12 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
 
         return $this->_accessToken;
     }
-    
+
+    /**
+     * Set user groups id for saving
+     * 
+     * @param array|integer $value
+     */
     public function setGroups($value)
     {
         if (!is_array($value)) {
@@ -288,7 +357,13 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
         }
         $this->_groups = $value;
     }
-    
+
+    /**
+     * Get setted User::$_groups
+     * Get it from UserGroup relation If not set
+     * 
+     * @return array
+     */
     public function getGroups()
     {
         if (is_null($this->_groups)) {
@@ -296,34 +371,45 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
         }
         return $this->_groups;
     }
-    
+
+    /**
+     * ProjectUser relation
+     * 
+     * @return \yii\db\ActiveQuery
+     */
     public function getProjectUsers()
     {
         return $this->hasMany(ProjectUser::className(), ['idUser' => 'id']);
     }
-    
+
+    /**
+     * Project relation
+     * 
+     * @return \yii\db\ActiveQuery
+     */
     public function getProjects()
     {
         return $this->hasMany(Project::className(), ['id' => 'idProject'])
-                ->via('projectUsers');
+                        ->via('projectUsers');
     }
-    
+
+    /**
+     * Get AuthItem active query from permissions of this user
+     * 
+     * @return \yii\db\ActiveQuery
+     */
     public function getPermissions()
     {
         $names = array_keys(Yii::$app->authManager->getPermissionsByUser($this->id));
-        
+
         return AuthItem::find()->permissions()->andWhere([
-            'name' => $names
+                    'name' => $names
         ]);
     }
 
-    protected function filterField()
-    {
-        return [
-            'login', 'lastname', 'firstname', 'middlename', 'email'
-        ];
-    }
-
+    /**
+     * @inheritdoc
+     */
     public function getFilterFields()
     {
         return [
@@ -332,6 +418,9 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface, Filterable
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function isOwner($userId)
     {
         return $this->id == $userId;

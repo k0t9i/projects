@@ -3,6 +3,7 @@
 namespace api\common\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%d_gender}}".
@@ -10,9 +11,9 @@ use Yii;
  * @property integer $id
  * @property string $name
  * 
- * @property-read string $localizedName
+ * @property-read string $localizedName Localized gender name
  */
-class DGender extends \yii\db\ActiveRecord
+class DGender extends ActiveRecord
 {
 
     /**
@@ -23,14 +24,22 @@ class DGender extends \yii\db\ActiveRecord
         return '{{%d_gender}}';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function fields()
     {
         return [
-            'id' => 'id',
+            'id'   => 'id',
             'name' => 'localizedName'
         ];
     }
-    
+
+    /**
+     * Get localized gender name
+     * 
+     * @return string
+     */
     public function getLocalizedName()
     {
         return Yii::t('api', $this->name);

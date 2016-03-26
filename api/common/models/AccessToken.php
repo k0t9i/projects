@@ -6,6 +6,7 @@ use Yii;
 use api\common\models\User;
 use api\rbac\HasOwnerInterface;
 use api\components\Filterable;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%access_token}}".
@@ -16,11 +17,15 @@ use api\components\Filterable;
  * @property integer $expiresIn
  * @property integer $createdAt
  *
- * @property User $user
+ * @property User|null $user User relation
  */
-class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface, Filterable
+class AccessToken extends ActiveRecord implements HasOwnerInterface, Filterable
 {
-    const LIFETIME = 24 * 3600;
+
+    /**
+     * Lifetime of token in seconds
+     */
+    const LIFETIME = 24 * 3600; // 24 hours
     const SCENARIO_CREATE = 'scenario-create';
 
     /**
@@ -55,28 +60,39 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface, Fil
     }
 
     /**
+     * User relation
+     * 
      * @return \yii\db\ActiveQuery
      */
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'idUser']);
     }
-    
+
+    /**
+     * Generate unique token
+     */
     private function generateToken()
     {
         $this->token = hash('sha256', uniqid(microtime(true), true));
     }
 
+    /**
+     * @inheritdoc
+     */
     public function isOwner($userId)
     {
         return $this->idUser == $userId;
     }
-    
+
+    /**
+     * @inheritdoc
+     */
     public function fields()
     {
         $ret = [
-            'id' => 'id',
-            'idUser' => 'idUser',
+            'id'        => 'id',
+            'idUser'    => 'idUser',
             'expiresIn' => function($model) {
                 return Yii::$app->formatter->format($model->expiresIn, 'datetime');
             },
@@ -84,14 +100,18 @@ class AccessToken extends \yii\db\ActiveRecord implements HasOwnerInterface, Fil
                 return Yii::$app->formatter->format($model->createdAt, 'datetime');
             },
         ];
-        
+
+        // Show token only if current user is owner of this access token or token newly created
         if ($this->idUser == \Yii::$app->user->getId() || $this->scenario == static::SCENARIO_CREATE) {
             $ret['token'] = 'token';
         }
-        
+
         return $ret;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getFilterFields()
     {
         return ['idUser', 'expiresIn', 'createdAt'];

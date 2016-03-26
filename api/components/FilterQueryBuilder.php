@@ -7,6 +7,9 @@ use yii\db\ActiveQuery;
 use api\components\Filterable;
 use yii\db\Schema;
 
+/**
+ * Class for fuild filter query
+ */
 class FilterQueryBuilder
 {
 
@@ -25,20 +28,75 @@ class FilterQueryBuilder
     const L_OP_OR = 'or';
     const L_OP_AND = 'and';
 
+    /**
+     * Array if valid filter fields
+     * @see Filterable::getFilterFields
+     * 
+     * @var array|null
+     */
     private static $_validFields;
+
+    /**
+     * Current model for filtering
+     * 
+     * @var yii\db\ActiveRecord
+     */
     private static $_model;
+
+    /**
+     * Array of operators which agrument can be array
+     * 
+     * @var array
+     */
     private static $_arrayOpMap = [
         self::OP_BETWEEN, self::OP_NOT_BETWEEN, self::OP_IN, self::OP_NOT_IN
     ];
+
+    /**
+     * Array of operators which agrument can be primitive types
+     * 
+     * @var array
+     */
     private static $_simpleOpMap = [
         self::OP_IN, self::OP_NOT_IN, self::OP_LIKE, self::OP_NOT_LIKE,
         self::OP_LT, self::OP_LTE, self::OP_EQ, self::OP_GTE, self::OP_GT,
         self::OP_NOT_EQ
     ];
+
+    /**
+     * Array of logical operators
+     * 
+     * @var array
+     */
     private static $_logicalOpMap = [
         self::L_OP_AND, self::L_OP_OR
     ];
 
+    /**
+     * Build active query condition from array of filters
+     * Filters should be in following form:
+     * [
+     *    [name, value, operator = "in", logicalOperator = "and"]
+     * ]
+     * Each level of nested arrays adds parentheses in the resulting condition
+     * Example:
+     * Array of following filters
+     * [
+     *     ["name", "value of name", "like"],
+     *     [
+     *         ["id", 10, ">", "or"]
+     *         ["id", 1]
+     *     ]
+     * ]
+     * will be converted to the condition
+     * name LIKE "%value of name%" AND (id > 10 OR id = 1)
+     * 
+     * @param array $filters
+     * @param ActiveQuery $query
+     * @return ActiveQuery
+     * @throws \InvalidArgumentException
+     * @throws \LogicException
+     */
     public static function build(array $filters, ActiveQuery $query)
     {
         static::$_model = new $query->modelClass();
@@ -49,16 +107,24 @@ class FilterQueryBuilder
         if (!is_array(static::$_validFields)) {
             throw new \LogicException(static::$_model->className() . '::getFilterFields must return an array');
         }
-        
+
         $extraFields = array_diff(static::$_validFields, static::$_model->attributes());
         if ($extraFields) {
             throw new \LogicException(static::$_model->className() . '::getFilterFields return extra fields: ' . implode(', ', $extraFields));
         }
-        
+
         static::parse($filters, $query);
         return $query;
     }
 
+    /**
+     * Parse filters recursively
+     * 
+     * @param array $filters
+     * @param Query $query
+     * @param string $operator
+     * @return string Logical operator
+     */
     private static function parse(array $filters, Query $query, $operator = null)
     {
         if ($filters) {
@@ -78,6 +144,13 @@ class FilterQueryBuilder
         }
     }
 
+    /**
+     * Add part of condition
+     * 
+     * @param Query $query
+     * @param array $condition
+     * @param string $operator
+     */
     private static function addCondition(Query $query, $condition, $operator)
     {
         if (trim($operator) == static::L_OP_OR) {
@@ -87,6 +160,14 @@ class FilterQueryBuilder
         }
     }
 
+    /**
+     * Prepare filter item:
+     * checks for required, inserts default values, casting values to correct db type
+     * 
+     * @param array $item
+     * @return array
+     * @throws \InvalidArgumentException
+     */
     private static function prepareFilter(array $item)
     {
         if (!isset($item[0]) && !isset($item[1])) {
@@ -122,7 +203,7 @@ class FilterQueryBuilder
         } else {
             $item[1] = static::typecast($item[0], $item[1]);
         }
-        
+
         switch ($item[2]) {
             case static::OP_BETWEEN:
             case static::OP_NOT_BETWEEN:
@@ -138,14 +219,22 @@ class FilterQueryBuilder
                 if (!array_key_exists($column->dbType, $types)) {
                     throw new \InvalidArgumentException('Operators LIKE and NOT LIKE can be uses only for string or text types');
                 }
-                //break skipped by design
+            //break skipped by design
             default:
                 $condition = [$item[2], $item[0], $item[1], $item[3]];
         }
-        
+
         return $condition;
     }
 
+    /**
+     * Casting value to correct db type
+     * @see yii\db\Column::dbTypecast
+     * 
+     * @param string $field
+     * @param mixed $value
+     * @return mixed
+     */
     private static function typecast($field, $value)
     {
         $column = static::$_model->getTableSchema()->getColumn($field);
@@ -155,18 +244,23 @@ class FilterQueryBuilder
 
         return $value;
     }
-    
+
+    /**
+     * Return string or text db types
+     * 
+     * @return array
+     */
     private static function getTextOrStringDbTypes()
     {
         $types = static::$_model->getDb()->getSchema()->typeMap;
         $ret = [];
-        
+
         foreach ($types as $dbType => $type) {
             if (in_array($type, [Schema::TYPE_STRING, Schema::TYPE_TEXT])) {
                 $ret[$dbType] = $dbType;
             }
         }
-        
+
         return $ret;
     }
 
