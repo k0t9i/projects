@@ -6,7 +6,7 @@ $params = array_merge(
 
 return [
     'id' => 'api',
-    'language' => 'ru',
+    'language' => 'en',
     'charset' => 'utf-8',
     'timeZone' => 'Europe/Moscow',
     'basePath' => dirname(__DIR__),
