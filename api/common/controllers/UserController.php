@@ -15,7 +15,7 @@ class UserController extends ApiController
 
         $behaviors['access'] = [
             'class' => AccessControl::className(),
-            'except' => ['options'],
+            'except' => ['options', 'self'],
             'rules' => [
                 [
                     'allow' => true,
@@ -24,7 +24,7 @@ class UserController extends ApiController
                 ],
                 [
                     'allow' => true,
-                    'actions' => ['view', 'self'],
+                    'actions' => ['view'],
                     'matchCallback' => function() {
                         return \Yii::$app->user->can('user.view', ['model' => $this->findModel()]);
                     }
@@ -85,7 +85,12 @@ class UserController extends ApiController
     
     public function actionSelf()
     {
-        return \Yii::$app->user->identity;
+        $parts = ['user', 'view'];
+        if ($this->module){
+            array_unshift($parts, $this->module->id);
+        }
+        $_GET['id'] = \Yii::$app->user->getId();
+        return \Yii::$app->runAction(implode('/', $parts), ['id' => \Yii::$app->user->getId()]);
     }
     
     public function actions()
