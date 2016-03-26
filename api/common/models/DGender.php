@@ -27,7 +27,7 @@ class DGender extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'id',
-            'name' => $this->localizedName
+            'name' => 'localizedName'
         ];
     }
     
