@@ -113,6 +113,9 @@ class User extends ActiveRecord implements IdentityInterface, Filterable, HasOwn
      */
     public function beforeSave($insert)
     {
+        if ($insert) {
+            $this->isActive = (boolean) $this->isActive;
+        }
         if ($this->password) {
             $this->passwordHash = \Yii::$app->security->generatePasswordHash($this->password);
         }
