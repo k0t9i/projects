@@ -70,6 +70,8 @@ return [
                     ]
                 ],
                 'GET v1/projects/<id:\d+>/users' => 'v1/project/users',
+                'POST v1/projects/<idProject:\d+>/users/<idUser:\d+>' => 'v1/project-user/create',
+                'DELETE v1/projects/<idUser:\d+>/users/<idProject:\d+>' => 'v1/project-user/delete',
                 'GET v1/users/<id:\d+>/projects' => 'v1/user/projects',
                 'POST v1/users/<idUser:\d+>/projects/<idProject:\d+>' => 'v1/project-user/create',
                 'DELETE v1/users/<idUser:\d+>/projects/<idProject:\d+>' => 'v1/project-user/delete',
