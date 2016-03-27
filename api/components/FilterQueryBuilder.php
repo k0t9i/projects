@@ -2,10 +2,11 @@
 
 namespace api\components;
 
-use yii\db\Query;
+use Yii;
 use yii\db\ActiveQuery;
 use api\components\Filterable;
 use yii\db\Schema;
+use yii\db\QueryBuilder;
 
 /**
  * Class for fuild filter query
@@ -13,6 +14,7 @@ use yii\db\Schema;
 class FilterQueryBuilder
 {
 
+    const PARAM_PREFIX = ':fqp';
     const OP_IN = 'in';
     const OP_NOT_IN = 'not in';
     const OP_LIKE = 'like';
@@ -73,6 +75,20 @@ class FilterQueryBuilder
     ];
 
     /**
+     * Params for building condition
+     * 
+     * @var string 
+     */
+    private static $_params = [];
+
+    /**
+     * Global param counter
+     * 
+     * @var integer
+     */
+    private static $_counter = 0;
+
+    /**
      * Build active query condition from array of filters
      * Filters should be in following form:
      * [
@@ -113,7 +129,13 @@ class FilterQueryBuilder
             throw new \LogicException(static::$_model->className() . '::getFilterFields return extra fields: ' . implode(', ', $extraFields));
         }
 
-        static::parse($filters, $query);
+        static::$_params = [];
+        static::$_counter = 0;
+
+        $condition = static::parse($filters)[0];
+        $query->andWhere($condition);
+        $query->params = array_merge($query->params, static::$_params);
+
         return $query;
     }
 
@@ -121,43 +143,55 @@ class FilterQueryBuilder
      * Parse filters recursively
      * 
      * @param array $filters
-     * @param Query $query
-     * @param string $operator
-     * @return string Logical operator
+     * @return array
      */
-    private static function parse(array $filters, Query $query, $operator = null)
+    private static function parse(array $filters)
     {
         if ($filters) {
             if (is_array($filters[0])) {
-                $subQuery = new Query();
-                $oldOperator = $operator;
+                $condition = '(';
                 foreach ($filters as $filter) {
-                    $operator = static::parse($filter, $subQuery, $operator);
+                    list($part, $operator) = static::parse($filter);
+                    $condition .= $part;
+                    if (($filter) !== end($filters)) {
+                        $condition .= ' ' . strtoupper($operator) . ' ';
+                    }
                 }
-                static::addCondition($query, $subQuery->where, $oldOperator);
+                $condition .= ')';
+                return [
+                    $condition, $operator
+                ];
             } else {
                 $filter = static::prepareFilter($filters);
-                $ret = array_pop($filter);
-                static::addCondition($query, $filter, $operator);
-                return $ret;
+                $operator = array_pop($filter);
+                return [
+                    static::buildCondition($filter), $operator
+                ];
             }
         }
     }
 
     /**
-     * Add part of condition
+     * Build part of condition
      * 
-     * @param Query $query
      * @param array $condition
-     * @param string $operator
+     * @return string
      */
-    private static function addCondition(Query $query, $condition, $operator)
+    private static function buildCondition($condition)
     {
-        if (trim($operator) == static::L_OP_OR) {
-            $query->orWhere($condition);
-        } else {
-            $query->andWhere($condition);
+        $builder = Yii::$app->db->getQueryBuilder();
+        
+        $params = [$condition[1]];
+        $rawRet = $builder->buildCondition($condition, $params);
+        
+        $keys = preg_grep('/^' . preg_quote(QueryBuilder::PARAM_PREFIX) . '[0-9]+$/', array_keys($params));
+
+        foreach ($keys as $key) {
+            $currentParam = static::PARAM_PREFIX . static::$_counter++;
+            static::$_params[$currentParam] = $params[$key];
+            $rawRet = str_replace($key, $currentParam, $rawRet);
         }
+        return $rawRet;
     }
 
     /**
