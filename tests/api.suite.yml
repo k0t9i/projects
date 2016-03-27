@@ -1,9 +1,0 @@
-class_name: ApiTester
-modules:
-    enabled:
-        - Filesystem
-        - Yii2
-        - \Helper\Api
-        - REST:
-            url: http://projects.dev/v1
-            depends: PhpBrowser
