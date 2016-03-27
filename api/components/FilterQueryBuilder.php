@@ -9,7 +9,7 @@ use yii\db\Schema;
 use yii\db\QueryBuilder;
 
 /**
- * Class for fuild filter query
+ * Class for field filter query
  */
 class FilterQueryBuilder
 {
