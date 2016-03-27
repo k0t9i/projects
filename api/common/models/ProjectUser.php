@@ -3,6 +3,7 @@
 namespace api\common\models;
 
 use yii\db\ActiveRecord;
+use api\rbac\HasOwnerInterface;
 
 /**
  * This is the model class for table "{{%project_user}}".
@@ -12,8 +13,11 @@ use yii\db\ActiveRecord;
  * @property integer $idProject
  * @property integer $attachedAt
  * @property boolean $isActive
+ * 
+ * @property-read User|null $user User relation
+ * @property-read Project|null $project Project realtion
  */
-class ProjectUser extends ActiveRecord
+class ProjectUser extends ActiveRecord implements HasOwnerInterface
 {
 
     /**
@@ -62,6 +66,41 @@ class ProjectUser extends ActiveRecord
                 ->where(['idUser' => (int)$idUser])
                 ->andWhere(['idProject' => (int)$idProject])
                 ->one();
+    }
+    
+    /**
+     * User relation
+     * 
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'idUser']);
+    }
+    
+    /**
+     * Project relation
+     * 
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProject()
+    {
+        return $this->hasOne(Project::className(), ['id' => 'idProject']);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isOwner($userId)
+    {
+        $project = $this->project;
+        
+        $ret = false;
+        if ($project) {
+            $ret = $project->isOwner($userId);
+        }
+        
+        return $ret;
     }
 
 }
