@@ -23,5 +23,45 @@ class ProjectUser extends ActiveRecord
     {
         return '{{%project_user}}';
     }
+    
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['idUser', 'idProject'], 'required'],
+            ['idUser', 'exist', 'targetClass' => User::className(), 'targetAttribute' => 'id'],
+            ['idProject', 'exist', 'targetClass' => Project::className(), 'targetAttribute' => 'id'],
+            [['idUser', 'idProject'], 'unique', 'targetAttribute' => ['idUser', 'idProject']]
+        ];
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function beforeSave($insert)
+    {
+        if ($insert) {
+            $this->attachedAt = time();
+            $this->isActive = true;
+        }
+        return parent::beforeSave($insert);
+    }
+    
+    /**
+     * Find ProjectUser by idUser and idProject
+     * 
+     * @param integer $idUser
+     * @param integer $idProject
+     * @return ProjectUser|null
+     */
+    public static function findByUserAndProject($idUser, $idProject)
+    {
+        return static::find()
+                ->where(['idUser' => (int)$idUser])
+                ->andWhere(['idProject' => (int)$idProject])
+                ->one();
+    }
 
 }

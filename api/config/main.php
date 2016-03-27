@@ -71,6 +71,8 @@ return [
                 ],
                 'GET v1/projects/<id:\d+>/users' => 'v1/project/users',
                 'GET v1/users/<id:\d+>/projects' => 'v1/user/projects',
+                'POST v1/users/<idUser:\d+>/projects/<idProject:\d+>' => 'v1/project-user/create',
+                'DELETE v1/users/<idUser:\d+>/projects/<idProject:\d+>' => 'v1/project-user/delete',
                 'GET v1/users/<id:\d+>/user-groups' => 'v1/user/user-groups',
                 'GET v1/users/<id:\d+>/permissions' => 'v1/user/permissions',
                 'GET v1/user-groups/<id:\d+>/users' => 'v1/user-group/users',
