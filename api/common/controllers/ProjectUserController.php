@@ -19,6 +19,37 @@ class ProjectUserController extends ApiController
     /**
      * @inheritdoc
      */
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+
+        $behaviors['access'] = [
+            'class'  => AccessControl::className(),
+            'except' => ['options'],
+            'rules'  => [
+                [
+                    'allow'         => true,
+                    'actions'       => ['create'],
+                    'matchCallback' => function() {
+                        return \Yii::$app->user->can('project-user.create', ['model' => $this->findModel()]);
+                    }
+                ],
+                [
+                    'allow'         => true,
+                    'actions'       => ['delete'],
+                    'matchCallback' => function() {
+                        return \Yii::$app->user->can('project-user.delete', ['model' => $this->findModel()]);
+                    }
+                ],
+            ]
+        ];
+
+        return $behaviors;
+    }
+    
+    /**
+     * @inheritdoc
+     */
     public function actions()
     {
         $actions = parent::actions();

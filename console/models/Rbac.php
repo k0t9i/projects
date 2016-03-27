@@ -67,6 +67,7 @@ class Rbac extends Model
         $userRoles = $this->initUserRoles($auth, 'user', $rules);
         $projectRoles = $this->initProjectRoles($auth, 'project', $rules);
         $userGroupRoles = $this->initUserGroupRoles($auth, 'user-group', $rules);
+        $projectUserRoles = $this->initProjectUserRoles($auth, 'project-user', $rules);
 
         $auth->addChild($performer, $tokenRoles['deleteOwn']);
         $auth->addChild($performer, $tokenRoles['viewOwn']);
@@ -91,6 +92,8 @@ class Rbac extends Model
         $auth->addChild($manager, $projectRoles['updateOwn']);
         $auth->addChild($manager, $projectRoles['ownUsers']);
         $auth->addChild($manager, $userGroupRoles['ownPermissions']);
+        $auth->addChild($manager, $projectUserRoles['createOwn']);
+        $auth->addChild($manager, $projectUserRoles['deleteOwn']);
 
         $auth->addChild($chief, $tokenRoles['deleteOwn']);
         $auth->addChild($chief, $tokenRoles['viewOwn']);
@@ -108,6 +111,8 @@ class Rbac extends Model
         $auth->addChild($chief, $projectRoles['users']);
         $auth->addChild($chief, $userGroupRoles['users']);
         $auth->addChild($chief, $userGroupRoles['permissions']);
+        $auth->addChild($chief, $projectUserRoles['create']);
+        $auth->addChild($chief, $projectUserRoles['delete']);
 
         $auth->addChild($admin, $tokenRoles['delete']);
         $auth->addChild($admin, $tokenRoles['deleteAll']);
@@ -129,6 +134,8 @@ class Rbac extends Model
         $auth->addChild($admin, $projectRoles['users']);
         $auth->addChild($admin, $userGroupRoles['users']);
         $auth->addChild($admin, $userGroupRoles['permissions']);
+        $auth->addChild($admin, $projectUserRoles['create']);
+        $auth->addChild($admin, $projectUserRoles['delete']);
     }
 
     /**
@@ -333,6 +340,41 @@ class Rbac extends Model
         $ret['ownPermissions']->ruleName = $rules['ownerRule']->name;
         $manager->add($ret['ownPermissions']);
         $manager->addChild($ret['ownPermissions'], $ret['permissions']);
+
+        return $ret;
+    }
+
+    /**
+     * Create roles and permissions for ProjectUser
+     * 
+     * @param ManagerInterface $manager
+     * @param string $key name of section
+     * @param array $rules used auth rules
+     * @return array
+     */
+    private function initProjectUserRoles(ManagerInterface $manager, $key, array $rules)
+    {
+        $ret = [];
+
+        $ret['create'] = $manager->createPermission($key . '.create');
+        $ret['create']->description = 'Create link between user and project';
+        $manager->add($ret['create']);
+
+        $ret['createOwn'] = $manager->createPermission($key . '.createOwn');
+        $ret['createOwn']->description = 'Create link between user and own project';
+        $ret['createOwn']->ruleName = $rules['ownerRule']->name;
+        $manager->add($ret['createOwn']);
+        $manager->addChild($ret['createOwn'], $ret['create']);
+
+        $ret['delete'] = $manager->createPermission($key . '.delete');
+        $ret['delete']->description = 'Delete link between user and project';
+        $manager->add($ret['delete']);
+
+        $ret['deleteOwn'] = $manager->createPermission($key . '.deleteOwn');
+        $ret['deleteOwn']->description = 'Delete link between user and own project';
+        $ret['deleteOwn']->ruleName = $rules['ownerRule']->name;
+        $manager->add($ret['deleteOwn']);
+        $manager->addChild($ret['deleteOwn'], $ret['delete']);
 
         return $ret;
     }
