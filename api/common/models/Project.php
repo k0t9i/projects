@@ -94,5 +94,18 @@ class Project extends ActiveRecord implements HasOwnerInterface, Filterable
             'name', 'description', 'startedAt', 'endedAt', 'isActive'
         ];
     }
+    
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['name', 'startedAt'], 'required'],
+            ['name', 'string', 'max' => '1024'],
+            ['desription', 'string'],
+            [['startedAt', 'endedAt'], 'integer']
+        ];
+    }
 
 }
