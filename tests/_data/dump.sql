@@ -677,11 +677,11 @@ SELECT pg_catalog.setval('project_user_record_id_seq', 1, false);
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: project_user
 --
 
-INSERT INTO "user" VALUES (3, 'admin', 'admin', 'AdminLastname', 'AdminFirstname', 'AdminMiddlename', 1, 'admin@test.dev', true);
-INSERT INTO "user" VALUES (4, 'chief', 'chief', 'ChiefLastname', 'ChiefFirstname', 'ChiefMiddlename', 1, 'chief@test.dev', true);
-INSERT INTO "user" VALUES (5, 'manager', 'manager', 'ManagerLastname', 'ManagerFirstname', 'ManagerMiddlename', 1, 'manager@test.dev', true);
-INSERT INTO "user" VALUES (7, 'performer', 'performer', 'PerformerLastname', 'PerformerFirstname', 'PerformerMiddlename', 1, 'performer@test.dev', true);
-INSERT INTO "user" VALUES (8, 'disabled', 'disabled', NULL, NULL, NULL, 1, 'disabled@test.dev', false);
+INSERT INTO "user" VALUES (4, 'chief', '$2a$06$.RAD5M11J1bD9Y1MAIcKF.2UfxdLfJvnz44CQIns5sg9utKY8WjgO', 'ChiefLastname', 'ChiefFirstname', 'ChiefMiddlename', 1, 'chief@test.dev', true);
+INSERT INTO "user" VALUES (3, 'admin', '$2a$06$Nh4603E1pgnVdNYmi3ZLaOmbFaCopirv3dAkFPh/ThcDKL/HqlEF.', 'AdminLastname', 'AdminFirstname', 'AdminMiddlename', 1, 'admin@test.dev', true);
+INSERT INTO "user" VALUES (5, 'manager', '$2a$06$D7AbB56YeLYYOKNF7Ystte3ifuy7vmprK5AsFx8WQDJHi4GQ20Sge', 'ManagerLastname', 'ManagerFirstname', 'ManagerMiddlename', 1, 'manager@test.dev', true);
+INSERT INTO "user" VALUES (7, 'performer', '$2a$06$ga4pC9ZN0n5zIYcJh6Gp1.lgK8B9LiHtasRK/4/dB4pi2Ji0E8J12', 'PerformerLastname', 'PerformerFirstname', 'PerformerMiddlename', 1, 'performer@test.dev', true);
+INSERT INTO "user" VALUES (8, 'disabled', '$2a$06$2XWEGsAxZ.3LXZY2alplbOoQFt2ZzWuPkX7vzukg1JubHJxNy.4Ym', NULL, NULL, NULL, 1, 'disabled@test.dev', false);
 
 
 --
