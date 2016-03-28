@@ -5,7 +5,6 @@ modules:
         - Filesystem
         - Yii2:
             configFile: './config/functional.php'
-        - \Helper\Functional
         - REST:
             url: http://localhost/v1
             depends: Yii2
