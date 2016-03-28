@@ -17,7 +17,7 @@ config:
 modules:
     config:
         Db:
-            dsn: 'pgsql:host=localhost;dbname=test_projects_db'
+            dsn: 'pgsql:host=localhost;dbname=test_project_db'
             dump: ./_data/dump.sql
-            user: 'test'
+            user: 'postgres'
             password:

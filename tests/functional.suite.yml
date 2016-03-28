@@ -1,12 +1,11 @@
 class_name: FunctionalTester
 modules:
     enabled:
+        - Db
         - Filesystem
-        - Yii2
+        - Yii2:
+            configFile: './config/functional.php'
         - \Helper\Functional
         - REST:
             url: http://localhost/v1
-            depends: PhpBrowser
-    config:
-        Yii2:
-            configFile: './config/functional.php'
+            depends: Yii2
