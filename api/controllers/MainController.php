@@ -24,8 +24,7 @@ class MainController extends Controller
             'file'    => $exception->getFile(),
             'line'    => $exception->getLine(),
             'code'    => $exception->getCode(),
-            'type'    => get_class($exception),
-            'trace'   => $exception->getTrace()
+            'type'    => get_class($exception)
         ];
     }
 
