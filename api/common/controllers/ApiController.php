@@ -11,6 +11,7 @@ use api\components\Filterable;
 use api\components\FilterQueryBuilder;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
+use yii\filters\Cors;
 
 /**
  * Base api controller
@@ -47,6 +48,13 @@ class ApiController extends ActiveController
                  */
                 QueryParamAuth::className()
             ]
+        ];
+        $behaviors['corsFilter'] = [
+            'class' => Cors::className(),
+            'cors' => [
+                'Origin' => ['*'],
+                'Access-Control-Request-Headers' => ['*']
+            ],
         ];
         return $behaviors;
     }
