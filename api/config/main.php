@@ -44,6 +44,12 @@ return [
                 ]
             ]
         ],
+        'request' => [
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+                'application/xml' => 'yii\web\XmlParser'
+            ]
+        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
