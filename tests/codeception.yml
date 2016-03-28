@@ -12,6 +12,8 @@ settings:
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
+config:
+    test_entry_url: http://localhost/index-test.php
 modules:
     config:
         Db:
@@ -19,4 +21,3 @@ modules:
             dump: ./_data/dump.sql
             user: 'test'
             password:
-        test_entry_url: http://projects.dev/index-test.php
