@@ -125,11 +125,11 @@ class AccessTokenController extends ApiController
                 ->indexBy('id')
                 ->asArray();
 
-        $exist = $query->all();
+        $exist = array_keys($query->all());
         $modelClass::deleteAll('id <> :id', [':id' => $currentToken->id]);
-        $removed = $query->all();
+        $notRemoved = $query->all();
 
-        return array_diff($exist, $removed);
+        return array_diff($exist, $notRemoved);
     }
 
 }
