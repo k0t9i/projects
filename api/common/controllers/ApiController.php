@@ -39,6 +39,7 @@ class ApiController extends ActiveController
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
             'class'       => CompositeAuth::className(),
+            'except' => ['options'],
             'authMethods' => [
                 HttpBearerAuth::className(),
                 /**
