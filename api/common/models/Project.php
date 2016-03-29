@@ -4,7 +4,6 @@ namespace api\common\models;
 
 use Yii;
 use api\components\Filterable;
-use yii\db\ActiveRecord;
 use api\rbac\HasOwnerInterface;
 
 /**
@@ -20,7 +19,7 @@ use api\rbac\HasOwnerInterface;
  * @property-read ProjectUser[] $projectUsers ProjectUser relation
  * @property-read User[] $users User relation
  */
-class Project extends ActiveRecord implements HasOwnerInterface, Filterable
+class Project extends ApiModel implements HasOwnerInterface, Filterable
 {
 
     /**

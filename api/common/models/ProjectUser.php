@@ -2,7 +2,6 @@
 
 namespace api\common\models;
 
-use yii\db\ActiveRecord;
 use api\rbac\HasOwnerInterface;
 
 /**
@@ -17,7 +16,7 @@ use api\rbac\HasOwnerInterface;
  * @property-read User|null $user User relation
  * @property-read Project|null $project Project realtion
  */
-class ProjectUser extends ActiveRecord implements HasOwnerInterface
+class ProjectUser extends ApiModel implements HasOwnerInterface
 {
 
     /**

@@ -9,7 +9,6 @@ use yii\helpers\ArrayHelper;
 use api\common\models\queries\UserQuery;
 use api\components\Filterable;
 use api\rbac\HasOwnerInterface;
-use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -32,7 +31,7 @@ use yii\db\ActiveRecord;
  * @property-read ProjectUser[] $projectUsers ProjectUser relation
  * @property-read Project[] $projects Project relation
  */
-class User extends ActiveRecord implements IdentityInterface, Filterable, HasOwnerInterface
+class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerInterface
 {
 
     const SCENARIO_CREATE = 'scenario-create';
@@ -311,9 +310,9 @@ class User extends ActiveRecord implements IdentityInterface, Filterable, HasOwn
      */
     public function extraFields()
     {
-        return [
-            'userGroups' => 'userGroups'
-        ];
+        $fields = parent::extraFields();
+        $fields['userGroups'] = 'userGroups';
+        return $fields;
     }
 
     /**

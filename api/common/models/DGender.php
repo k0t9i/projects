@@ -3,7 +3,6 @@
 namespace api\common\models;
 
 use Yii;
-use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%d_gender}}".
@@ -13,7 +12,7 @@ use yii\db\ActiveRecord;
  * 
  * @property-read string $localizedName Localized gender name
  */
-class DGender extends ActiveRecord
+class DGender extends ApiModel
 {
 
     /**

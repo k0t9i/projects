@@ -6,7 +6,6 @@ use Yii;
 use api\common\models\User;
 use api\rbac\HasOwnerInterface;
 use api\components\Filterable;
-use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%access_token}}".
@@ -19,7 +18,7 @@ use yii\db\ActiveRecord;
  *
  * @property User|null $user User relation
  */
-class AccessToken extends ActiveRecord implements HasOwnerInterface, Filterable
+class AccessToken extends ApiModel implements HasOwnerInterface, Filterable
 {
 
     /**

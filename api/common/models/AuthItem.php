@@ -5,7 +5,6 @@ namespace api\common\models;
 use Yii;
 use yii\rbac\Role;
 use api\common\models\queries\AuthItemQuery;
-use yii\db\ActiveRecord;
 use api\components\Filterable;
 
 /**
@@ -19,7 +18,7 @@ use api\components\Filterable;
  * @property integer $created_at
  * @property integer $updated_at
  */
-class AuthItem extends ActiveRecord implements Filterable
+class AuthItem extends ApiModel implements Filterable
 {
 
     const TYPE_ROLE = Role::TYPE_ROLE;
