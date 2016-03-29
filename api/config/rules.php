@@ -32,7 +32,6 @@ return [
     'GET,HEAD v1/users/<id:\d+>/projects'                    => 'v1/user/projects',
     'OPTIONS v1/users/<id:\d+>/projects'                     => 'v1/user/options',
     'POST v1/users/<idUser:\d+>/projects/<idProject:\d+>'    => 'v1/project-user/create',
-    'OPTIONS v1/users/<idUser:\d+>/projects/<idProject:\d+>' => 'v1/project-user/options',
     'DELETE v1/users/<idUser:\d+>/projects/<idProject:\d+>'  => 'v1/project-user/delete',
     'OPTIONS v1/users/<idUser:\d+>/projects/<idProject:\d+>' => 'v1/project-user/options',
     'GET,HEAD v1/users/<id:\d+>/user-groups'                 => 'v1/user/user-groups',
