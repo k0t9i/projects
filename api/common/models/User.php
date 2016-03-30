@@ -39,22 +39,22 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
 
     /**
      * Password from create/update action
-     * 
-     * @var string 
+     *
+     * @var string
      */
     public $password;
 
     /**
      * Password repeat from create/update action
-     * 
-     * @var string 
+     *
+     * @var string
      */
     public $passwordRepeat;
 
     /**
      * @see getCurrentAccessToken
-     * 
-     * @var AccessToken|string|null 
+     *
+     * @var AccessToken|string|null
      */
     private $_accessToken;
 
@@ -65,7 +65,7 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
 
     /**
      * Array of old group ids
-     * 
+     *
      * @var array
      */
     private $_oldGroups = [];
@@ -113,7 +113,7 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
     public function beforeSave($insert)
     {
         if ($insert) {
-            $this->isActive = (boolean) $this->isActive;
+            $this->isActive = (boolean)$this->isActive;
         }
         if ($this->password) {
             $this->passwordHash = \Yii::$app->security->generatePasswordHash($this->password);
@@ -137,19 +137,19 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
                 $rows[] = [$this->id, $id];
             }
             static::getDb()
-                    ->createCommand()
-                    ->batchInsert(static::JUNCTION_USER_GROUP, ['idUser', 'idUserGroup'], $rows)
-                    ->execute();
+                ->createCommand()
+                ->batchInsert(static::JUNCTION_USER_GROUP, ['idUser', 'idUserGroup'], $rows)
+                ->execute();
         }
         $deleteIds = array_diff($this->_oldGroups, $this->groups);
         if ($deleteIds) {
             static::getDb()
-                    ->createCommand()
-                    ->delete(static::JUNCTION_USER_GROUP, [
-                        'idUserGroup' => $deleteIds,
-                        'idUser'      => $this->id
-                    ])
-                    ->execute();
+                ->createCommand()
+                ->delete(static::JUNCTION_USER_GROUP, [
+                    'idUserGroup' => $deleteIds,
+                    'idUser'      => $this->id
+                ])
+                ->execute();
         }
 
         if ($insertIds || $deleteIds) {
@@ -175,7 +175,7 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
 
     /**
      * Gender relation
-     * 
+     *
      * @return \yii\db\ActiveQuery
      */
     public function getGender()
@@ -185,7 +185,7 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
 
     /**
      * AccessToken relation
-     * 
+     *
      * @return \yii\db\ActiveQuery
      */
     public function getAccessTokens()
@@ -218,15 +218,15 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
          * Find only not expired token
          */
         $ret = static::find()
-                ->joinWith([
-                    'accessTokens' => function($query) {
-                        $query->from(AccessToken::tableName() . ' at');
-                    }
-                ])
-                ->where(['at.token' => $token])
-                ->andWhere('at."expiresIn" > :now', [':now' => time()])
-                ->active()
-                ->one();
+            ->joinWith([
+                'accessTokens' => function ($query) {
+                    $query->from(AccessToken::tableName() . ' at');
+                }
+            ])
+            ->where(['at.token' => $token])
+            ->andWhere('at."expiresIn" > :now', [':now' => time()])
+            ->active()
+            ->one();
         if ($ret) {
             $ret->_accessToken = $token;
         }
@@ -253,7 +253,7 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
     /**
      * Find User model by login and validate it password
      * Return null if user not found or password is invalid
-     * 
+     *
      * @param string $login
      * @param string $password
      * @return User|null
@@ -261,9 +261,9 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
     public static function findByLoginAndPassword($login, $password)
     {
         $model = static::find()
-                        ->where([
-                            'login' => $login
-                        ])->active()->one();
+            ->where([
+                'login' => $login
+            ])->active()->one();
 
         $ret = null;
         if ($model) {
@@ -290,18 +290,18 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
             'lastname'   => 'lastname',
             'firstname'  => 'firstname',
             'middlename' => 'middlename',
-            'gender'     => function($model) {
+            'gender'     => function ($model) {
                 return $model->gender ? $model->gender->localizedName : null;
             },
-            'email'     => 'email',
-            'lastLogin' => function($model) {
+            'email'      => 'email',
+            'lastLogin'  => function ($model) {
                 $timestamp = null;
                 if ($model->currentAccessToken) {
                     $timestamp = $model->currentAccessToken->createdAt;
                 }
                 return Yii::$app->formatter->format($timestamp, 'datetime');
             },
-            'isActive' => 'isActive'
+            'isActive'   => 'isActive'
         ];
     }
 
@@ -317,7 +317,7 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
 
     /**
      * UserGroup relation
-     * 
+     *
      * @return \yii\db\ActiveQuery
      */
     public function getUserGroups()
@@ -328,19 +328,19 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
     /**
      * Get AccessToken model by token from db or find last AccessToken
      * Return null if AccessToken not found
-     * 
+     *
      * @return AccessToken|null
      */
     public function getCurrentAccessToken()
     {
         if (!($this->_accessToken instanceof AccessToken)) {
             $this->_accessToken = AccessToken::findOne([
-                        'token' => $this->_accessToken
+                'token' => $this->_accessToken
             ]);
             if (!$this->_accessToken) {
                 $this->_accessToken = $this->getAccessTokens()
-                        ->orderBy(AccessToken::tableName() . '."createdAt" DESC')
-                        ->one();
+                    ->orderBy(AccessToken::tableName() . '."createdAt" DESC')
+                    ->one();
             }
         }
 
@@ -349,7 +349,7 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
 
     /**
      * Set user groups id for saving
-     * 
+     *
      * @param array|integer $value
      */
     public function setGroups($value)
@@ -363,7 +363,7 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
     /**
      * Get setted User::$_groups
      * Get it from UserGroup relation If not set
-     * 
+     *
      * @return array
      */
     public function getGroups()
@@ -376,7 +376,7 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
 
     /**
      * ProjectUser relation
-     * 
+     *
      * @return \yii\db\ActiveQuery
      */
     public function getProjectUsers()
@@ -386,18 +386,18 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
 
     /**
      * Project relation
-     * 
+     *
      * @return \yii\db\ActiveQuery
      */
     public function getProjects()
     {
         return $this->hasMany(Project::className(), ['id' => 'idProject'])
-                        ->via('projectUsers');
+            ->via('projectUsers');
     }
 
     /**
      * Get AuthItem active query from permissions of this user
-     * 
+     *
      * @return \yii\db\ActiveQuery
      */
     public function getPermissions()
@@ -405,7 +405,7 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
         $names = array_keys(Yii::$app->authManager->getPermissionsByUser($this->id));
 
         return AuthItem::find()->permissions()->andWhere([
-                    'name' => $names
+            'name' => $names
         ]);
     }
 
@@ -426,6 +426,19 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
     public function isOwner($userId)
     {
         return $this->id == $userId;
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'login'      => Yii::t('api', 'Login'),
+            'lastname'   => Yii::t('api', 'Last Name'),
+            'firstname'  => Yii::t('api', 'First Name'),
+            'middlename' => Yii::t('api', 'Middle Name'),
+            'idGender'   => Yii::t('api', 'Gender'),
+            'email'      => Yii::t('api', 'Email'),
+            'isActive'   => Yii::t('api', 'Is Active'),
+        ];
     }
 
 }

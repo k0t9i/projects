@@ -28,18 +28,18 @@ class UserGroup extends ApiModel implements HasOwnerInterface, Filterable
 
     /**
      * User relation
-     * 
+     *
      * @return \yii\db\ActiveQuery
      */
     public function getUsers()
     {
         return $this->hasMany(User::className(), ['id' => 'idUser'])
-                        ->viaTable(User::JUNCTION_USER_GROUP, ['idUserGroup' => 'id']);
+            ->viaTable(User::JUNCTION_USER_GROUP, ['idUserGroup' => 'id']);
     }
 
     /**
-     * Get role from AuthManager by mainRole 
-     * 
+     * Get role from AuthManager by mainRole
+     *
      * @return \yii\rbac\Role|null
      */
     public function getMainRole()
@@ -49,7 +49,7 @@ class UserGroup extends ApiModel implements HasOwnerInterface, Filterable
 
     /**
      * Get AuthItem active query from permissions of main role
-     * 
+     *
      * @return \yii\db\ActiveQuery
      */
     public function getPermissions()
@@ -57,7 +57,7 @@ class UserGroup extends ApiModel implements HasOwnerInterface, Filterable
         $names = array_keys(Yii::$app->authManager->getPermissionsByRole($this->mainRole));
 
         return AuthItem::find()->permissions()->andWhere([
-                    'name' => $names
+            'name' => $names
         ]);
     }
 
@@ -79,8 +79,8 @@ class UserGroup extends ApiModel implements HasOwnerInterface, Filterable
     public function isOwner($userId)
     {
         return $this->getUsers()->andWhere([
-                    User::tableName() . '.id' => (int) $userId
-                ])->exists();
+            User::tableName() . '.id' => (int)$userId
+        ])->exists();
     }
 
     /**
@@ -89,6 +89,14 @@ class UserGroup extends ApiModel implements HasOwnerInterface, Filterable
     public function getFilterFields()
     {
         return ['name', 'mainRole'];
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'name'     => Yii::t('api', 'Name'),
+            'mainRole' => Yii::t('api', 'Main Role'),
+        ];
     }
 
 }

@@ -77,7 +77,7 @@ class Project extends ApiModel implements HasOwnerInterface, Filterable
             'startedAt'   => function($model) {
                 return Yii::$app->formatter->format($model->startedAt, 'datetime');
             },
-            'ednedAt' => function($model) {
+            'endedAt' => function($model) {
                 return Yii::$app->formatter->format($model->endedAt, 'datetime');
             },
             'isActive' => 'isActive'
@@ -106,5 +106,17 @@ class Project extends ApiModel implements HasOwnerInterface, Filterable
             [['startedAt', 'endedAt'], 'integer']
         ];
     }
+
+    public function attributeLabels()
+    {
+        return [
+            'name'      => Yii::t('api', 'Name'),
+            'description'   => Yii::t('api', 'Description'),
+            'startedAt'  => Yii::t('api', 'Started At'),
+            'endedAt' => Yii::t('api', 'Ended At'),
+            'isActive'   => Yii::t('api', 'Is Active'),
+        ];
+    }
+
 
 }
