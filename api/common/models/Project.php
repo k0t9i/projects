@@ -107,6 +107,9 @@ class Project extends ApiModel implements HasOwnerInterface, Filterable
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function attributeLabels()
     {
         return [
@@ -118,5 +121,31 @@ class Project extends ApiModel implements HasOwnerInterface, Filterable
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function beforeDelete()
+    {
+        if (parent::beforeDelete()) {
+            /**
+             * ProjectUser has relation which need to be removed
+             */
+            foreach ($this->projectUsers as $item) {
+                $item->delete();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function transactions()
+    {
+        return [
+            static::SCENARIO_DEFAULT => static::OP_DELETE
+        ];
+    }
 
 }

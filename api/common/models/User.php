@@ -428,6 +428,9 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
         return $this->id == $userId;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function attributeLabels()
     {
         return [
@@ -441,6 +444,36 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
             'groups'         => Yii::t('api', 'Groups'),
             'password'       => Yii::t('api', 'Password'),
             'passwordRepeat' => Yii::t('api', 'Repeat Password'),
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function beforeDelete()
+    {
+        if (parent::beforeDelete()) {
+            AccessToken::deleteAll([
+                'idUser' => $this->id
+            ]);
+            /**
+             * ProjectUser has relation which need to be removed
+             */
+            foreach ($this->projectUsers as $item) {
+                $item->delete();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function transactions()
+    {
+        return [
+            static::SCENARIO_DEFAULT => static::OP_DELETE
         ];
     }
 
