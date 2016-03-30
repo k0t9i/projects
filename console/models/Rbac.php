@@ -94,6 +94,7 @@ class Rbac extends Model
         $auth->addChild($manager, $userGroupRoles['ownPermissions']);
         $auth->addChild($manager, $projectUserRoles['createOwn']);
         $auth->addChild($manager, $projectUserRoles['deleteOwn']);
+        $auth->addChild($manager, $projectUserRoles['switchStateOwn']);
 
         $auth->addChild($chief, $tokenRoles['deleteOwn']);
         $auth->addChild($chief, $tokenRoles['viewOwn']);
@@ -104,6 +105,7 @@ class Rbac extends Model
         $auth->addChild($chief, $userRoles['projects']);
         $auth->addChild($chief, $userRoles['userGroups']);
         $auth->addChild($chief, $userRoles['permissions']);
+        $auth->addChild($chief, $userRoles['switchState']);
         $auth->addChild($chief, $projectRoles['view']);
         $auth->addChild($chief, $projectRoles['viewAll']);
         $auth->addChild($chief, $projectRoles['create']);
@@ -113,6 +115,7 @@ class Rbac extends Model
         $auth->addChild($chief, $userGroupRoles['permissions']);
         $auth->addChild($chief, $projectUserRoles['create']);
         $auth->addChild($chief, $projectUserRoles['delete']);
+        $auth->addChild($chief, $projectUserRoles['switchState']);
 
         $auth->addChild($admin, $tokenRoles['delete']);
         $auth->addChild($admin, $tokenRoles['deleteAll']);
@@ -126,6 +129,7 @@ class Rbac extends Model
         $auth->addChild($admin, $userRoles['projects']);
         $auth->addChild($admin, $userRoles['userGroups']);
         $auth->addChild($admin, $userRoles['permissions']);
+        $auth->addChild($admin, $userRoles['switchState']);
         $auth->addChild($admin, $projectRoles['view']);
         $auth->addChild($admin, $projectRoles['viewAll']);
         $auth->addChild($admin, $projectRoles['create']);
@@ -136,6 +140,7 @@ class Rbac extends Model
         $auth->addChild($admin, $userGroupRoles['permissions']);
         $auth->addChild($admin, $projectUserRoles['create']);
         $auth->addChild($admin, $projectUserRoles['delete']);
+        $auth->addChild($admin, $projectUserRoles['switchState']);
     }
 
     /**
@@ -254,6 +259,10 @@ class Rbac extends Model
         $ret['ownPermissions']->ruleName = $rules['ownerRule']->name;
         $manager->add($ret['ownPermissions']);
         $manager->addChild($ret['ownPermissions'], $ret['permissions']);
+
+        $ret['switchState'] = $manager->createPermission($key . '.switchState');
+        $ret['switchState']->description = 'Switch user\'s state';
+        $manager->add($ret['switchState']);
 
         return $ret;
     }
@@ -375,6 +384,16 @@ class Rbac extends Model
         $ret['deleteOwn']->ruleName = $rules['ownerRule']->name;
         $manager->add($ret['deleteOwn']);
         $manager->addChild($ret['deleteOwn'], $ret['delete']);
+
+        $ret['switchState'] = $manager->createPermission($key . '.switchState');
+        $ret['switchState']->description = 'Switch project user\'s state';
+        $manager->add($ret['switchState']);
+
+        $ret['switchStateOwn'] = $manager->createPermission($key . '.switchStateOwn');
+        $ret['switchStateOwn']->description = 'Switch own project user\'s state';
+        $ret['switchStateOwn']->ruleName = $rules['ownerRule']->name;
+        $manager->add($ret['switchStateOwn']);
+        $manager->addChild($ret['switchStateOwn'], $ret['switchState']);
 
         return $ret;
     }

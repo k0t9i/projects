@@ -31,7 +31,7 @@ class UserController extends ApiController
                 [
                     'allow'         => true,
                     'actions'       => ['view'],
-                    'matchCallback' => function() {
+                    'matchCallback' => function () {
                         return \Yii::$app->user->can('user.view', ['model' => $this->findModel()]);
                     }
                 ],
@@ -43,7 +43,7 @@ class UserController extends ApiController
                 [
                     'allow'         => true,
                     'actions'       => ['update'],
-                    'matchCallback' => function() {
+                    'matchCallback' => function () {
                         return \Yii::$app->user->can('user.update', ['model' => $this->findModel()]);
                     }
                 ],
@@ -55,23 +55,28 @@ class UserController extends ApiController
                 [
                     'allow'         => true,
                     'actions'       => ['projects'],
-                    'matchCallback' => function() {
+                    'matchCallback' => function () {
                         return \Yii::$app->user->can('user.projects', ['model' => $this->findModel()]);
                     }
                 ],
                 [
                     'allow'         => true,
                     'actions'       => ['user-groups'],
-                    'matchCallback' => function() {
+                    'matchCallback' => function () {
                         return \Yii::$app->user->can('user.userGroups', ['model' => $this->findModel()]);
                     }
                 ],
                 [
                     'allow'         => true,
                     'actions'       => ['permissions'],
-                    'matchCallback' => function() {
+                    'matchCallback' => function () {
                         return \Yii::$app->user->can('user.permissions', ['model' => $this->findModel()]);
                     }
+                ],
+                [
+                    'allow'   => true,
+                    'actions' => ['enable', 'disable', 'switch-state'],
+                    'roles'   => ['user.switchState']
                 ]
             ]
         ];
@@ -88,6 +93,11 @@ class UserController extends ApiController
 
         $verbs['self'] = ['GET'];
         $verbs['projects'] = ['GET'];
+        $verbs['user-groups'] = ['GET'];
+        $verbs['permissions'] = ['GET'];
+        $verbs['enable'] = ['GET'];
+        $verbs['disable'] = ['GET'];
+        $verbs['switch-state'] = ['GET'];
 
         return $verbs;
     }
@@ -95,7 +105,7 @@ class UserController extends ApiController
     /**
      * Show self user info
      * Alias for user/view
-     * 
+     *
      * @return api\common\models\User
      */
     public function actionSelf()
@@ -123,7 +133,7 @@ class UserController extends ApiController
 
     /**
      * List user projects
-     * 
+     *
      * @return yii\data\ActiveDataProvider
      */
     public function actionProjects()
@@ -133,7 +143,7 @@ class UserController extends ApiController
 
     /**
      * List of user usergroups
-     * 
+     *
      * @return yii\data\ActiveDataProvider
      */
     public function actionUserGroups()
@@ -143,12 +153,57 @@ class UserController extends ApiController
 
     /**
      * List of user pemissions
-     * 
+     *
      * @return yii\data\ActiveDataProvider
      */
     public function actionPermissions()
     {
         return $this->prepareDataProvider($this->findModel()->getPermissions());
+    }
+
+    /**
+     * Disable user
+     *
+     * @return array
+     */
+    public function actionDisable()
+    {
+        $model = $this->findModel();
+        $model->isActive = false;
+
+        return [
+            'success' => (boolean)$model->save(false, ['isActive'])
+        ];
+    }
+
+    /**
+     * Enable user
+     *
+     * @return array
+     */
+    public function actionEnable()
+    {
+        $model = $this->findModel();
+        $model->isActive = true;
+
+        return [
+            'success' => (boolean)$model->save(false, ['isActive'])
+        ];
+    }
+
+    /**
+     * Switch user's state
+     *
+     * @return array
+     */
+    public function actionSwitchState()
+    {
+        $model = $this->findModel();
+        $model->isActive = !$model->isActive;
+
+        return [
+            'success' => (boolean)$model->save(false, ['isActive'])
+        ];
     }
 
 }
