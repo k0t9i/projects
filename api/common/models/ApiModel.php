@@ -19,9 +19,6 @@ class ApiModel extends ActiveRecord
         return [
             'labels' => function ($model) {
                 return $model->attributeLabels();
-            },
-            'hints' => function ($model) {
-                return $model->attributeHints();
             }
         ];
     }
