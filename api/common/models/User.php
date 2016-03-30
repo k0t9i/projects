@@ -431,13 +431,16 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
     public function attributeLabels()
     {
         return [
-            'login'      => Yii::t('api', 'Login'),
-            'lastname'   => Yii::t('api', 'Last Name'),
-            'firstname'  => Yii::t('api', 'First Name'),
-            'middlename' => Yii::t('api', 'Middle Name'),
-            'idGender'   => Yii::t('api', 'Gender'),
-            'email'      => Yii::t('api', 'Email'),
-            'isActive'   => Yii::t('api', 'Is Active'),
+            'login'          => Yii::t('api', 'Login'),
+            'lastname'       => Yii::t('api', 'Last Name'),
+            'firstname'      => Yii::t('api', 'First Name'),
+            'middlename'     => Yii::t('api', 'Middle Name'),
+            'idGender'       => Yii::t('api', 'Gender'),
+            'email'          => Yii::t('api', 'Email'),
+            'isActive'       => Yii::t('api', 'Is Active'),
+            'groups'         => Yii::t('api', 'Groups'),
+            'password'       => Yii::t('api', 'Password'),
+            'passwordRepeat' => Yii::t('api', 'Repeat Password'),
         ];
     }
 
