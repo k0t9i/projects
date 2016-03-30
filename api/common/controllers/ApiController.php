@@ -53,7 +53,8 @@ class ApiController extends ActiveController
             'class' => Cors::className(),
             'cors' => [
                 'Origin' => ['*'],
-                'Access-Control-Request-Headers' => ['*']
+                'Access-Control-Request-Headers' => ['*'],
+                'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']
             ],
         ];
         return $behaviors;
