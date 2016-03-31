@@ -291,7 +291,7 @@ class User extends ApiModel implements IdentityInterface, Filterable, HasOwnerIn
             'firstname'  => 'firstname',
             'middlename' => 'middlename',
             'gender'     => function ($model) {
-                return $model->gender ? $model->gender->localizedName : null;
+                return $model->gender;
             },
             'email'      => 'email',
             'lastLogin'  => function ($model) {
