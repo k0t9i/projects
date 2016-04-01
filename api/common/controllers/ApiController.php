@@ -49,14 +49,18 @@ class ApiController extends ActiveController
                 QueryParamAuth::className()
             ]
         ];
-        $behaviors['corsFilter'] = [
-            'class' => Cors::className(),
-            'cors' => [
-                'Origin' => ['*'],
-                'Access-Control-Request-Headers' => ['*'],
-                'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']
-            ],
-        ];
+		
+		// corsFilter should be running before authenticator
+		$behaviors = array_merge([
+			'corsFilter' => [
+				'class' => Cors::className(),
+				'cors' => [
+					'Origin' => ['*'],
+					'Access-Control-Request-Headers' => ['*'],
+					'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']
+				],
+			]
+		], $behaviors);
         return $behaviors;
     }
 
