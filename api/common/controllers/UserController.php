@@ -21,7 +21,7 @@ class UserController extends ApiController
 
         $behaviors['access'] = [
             'class'  => AccessControl::className(),
-            'except' => ['options', 'self'],
+            'except' => ['options', 'self', 'labels'],
             'rules'  => [
                 [
                     'allow'   => true,

@@ -2,6 +2,7 @@
 
 namespace api\common\controllers;
 
+use yii\db\ActiveRecord;
 use yii\rest\ActiveController;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\QueryParamAuth;
@@ -21,14 +22,14 @@ class ApiController extends ActiveController
 
     /**
      * Name of get parameter for model filtering
-     * 
+     *
      * @var string
      */
     public $filterParam = 'filter';
 
     /**
      *
-     * @var yii\rest\Action 
+     * @var yii\rest\Action
      */
     private $_dummyAction;
 
@@ -39,7 +40,7 @@ class ApiController extends ActiveController
     {
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
-            'class'       => CompositeAuth::className(),
+            'class' => CompositeAuth::className(),
             'except' => ['options'],
             'authMethods' => [
                 HttpBearerAuth::className(),
@@ -49,25 +50,32 @@ class ApiController extends ActiveController
                 QueryParamAuth::className()
             ]
         ];
-		
-		// corsFilter should be running before authenticator
-		$behaviors = array_merge([
-			'corsFilter' => [
-				'class' => Cors::className(),
-				'cors' => [
-					'Origin' => ['*'],
-					'Access-Control-Request-Headers' => ['*'],
-					'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']
-				],
-			]
-		], $behaviors);
+
+        // corsFilter should be running before authenticator
+        $behaviors = array_merge([
+            'corsFilter' => [
+                'class' => Cors::className(),
+                'cors' => [
+                    'Origin' => ['*'],
+                    'Access-Control-Request-Headers' => ['*'],
+                    'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']
+                ],
+            ]
+        ], $behaviors);
         return $behaviors;
+    }
+
+    public function actionLabels()
+    {
+        $model = new $this->modelClass();
+
+        return $model->attributeLabels();
     }
 
     /**
      * Wrapper for @see yii\rest\Action::findModel
      * Find controller model by 'id' get parameter
-     * 
+     *
      * @return yii\db\ActiveRecord|null
      */
     protected function findModel()
@@ -100,8 +108,20 @@ class ApiController extends ActiveController
     }
 
     /**
+     * @inheritdoc
+     */
+    public function verbs()
+    {
+        $verbs = parent::verbs();
+
+        $verbs['labels'] = ['GET'];
+
+        return $verbs;
+    }
+
+    /**
      * Apply filters for ActiveDataProviders of Filterable model
-     * 
+     *
      * @param ActiveQuery $query
      * @return ActiveDataProvider
      * @throws \InvalidArgumentException

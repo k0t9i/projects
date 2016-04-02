@@ -24,7 +24,7 @@ class AccessTokenController extends ApiController
         $behaviors['authenticator']['except'] = ['create', 'options']; // Not uses authentication for create action
         $behaviors['access'] = [
             'class'  => AccessControl::className(),
-            'except' => ['create', 'options'],
+            'except' => ['create', 'options', 'labels'],
             'rules'  => [
                 [
                     'allow'   => true,

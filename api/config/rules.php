@@ -4,7 +4,11 @@ return [
     [
         'class'      => 'yii\rest\UrlRule',
         'controller' => [
-            'v1/user-group', 'v1/gender', 'v1/project', 'v1/auth-item'
+            'v1/user-group', 'v1/gender', 'v1/project', 'v1/auth-item', 'v1/user', 'v1/access-token'
+        ],
+        'extraPatterns' => [
+            'GET labels'     => 'labels',
+            'OPTIONS labels' => 'options'
         ]
     ],
     [
