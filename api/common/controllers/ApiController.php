@@ -2,7 +2,9 @@
 
 namespace api\common\controllers;
 
-use yii\db\ActiveRecord;
+use Yii;
+use api\rbac\HasOwnerInterface;
+use api\rbac\OwnerRule;
 use yii\rest\ActiveController;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\QueryParamAuth;
@@ -145,6 +147,26 @@ class ApiController extends ActiveController
             'query' => $query
         ]);
         return $dp;
+    }
+
+    /**
+     * Check if user is owner of model
+     * @see OwnerRule
+     *
+     * @param integer $id
+     * @return array
+     * @throws NotSupportedException
+     */
+    public function actionIsOwner($id)
+    {
+        $model = $this->findModel();
+        if ($model instanceof HasOwnerInterface) {
+            return [
+                'result' => $model->isOwner(Yii::$app->user->getId()) ? 1 : 0
+            ];
+        } else {
+            throw new NotSupportedException();
+        }
     }
 
 }

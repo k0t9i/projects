@@ -8,7 +8,9 @@ return [
         ],
         'extraPatterns' => [
             'GET labels'     => 'labels',
-            'OPTIONS labels' => 'options'
+            'OPTIONS labels' => 'options',
+            'GET <id:\d+>/is-owner'     => 'is-owner',
+            'OPTIONS is-owner {id}' => 'options'
         ]
     ],
     [

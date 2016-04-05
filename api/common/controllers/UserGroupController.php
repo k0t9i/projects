@@ -21,7 +21,7 @@ class UserGroupController extends ApiController
 
         $behaviors['access'] = [
             'class'  => AccessControl::className(),
-            'except' => ['options', 'view', 'index', 'labels'],
+            'except' => ['options', 'view', 'index', 'labels', 'is-owner'],
             'rules'  => [
                 [
                     'allow'         => true,

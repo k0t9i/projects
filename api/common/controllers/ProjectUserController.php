@@ -25,7 +25,7 @@ class ProjectUserController extends ApiController
 
         $behaviors['access'] = [
             'class'  => AccessControl::className(),
-            'except' => ['options', 'labels'],
+            'except' => ['options', 'labels', 'is-owner'],
             'rules'  => [
                 [
                     'allow'         => true,
